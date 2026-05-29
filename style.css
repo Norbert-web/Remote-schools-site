@@ -1,0 +1,14 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden; /* Prevents scrolling */
+    background-color: #1a1a1a;
+}
+
+canvas {
+    display: block;
+}

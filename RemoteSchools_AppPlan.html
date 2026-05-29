@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RemoteSchools Uganda — Full App Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --sun: #F4A623;
+    --earth: #2D5016;
+    --sky: #1A3A5C;
+    --cream: #FDF6E3;
+    --clay: #C4622D;
+    --mint: #3DAA74;
+    --light: #F9F3E8;
+    --ink: #1C1C1E;
+    --muted: #6B6B6B;
+    --card: #FFFFFF;
+    --border: #E8DFC8;
+    --accent1: #E8534A;
+    --accent2: #4A90D9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--sky) 0%, #0D2137 60%, var(--earth) 100%);
+    color: white;
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(244,166,35,0.18) 0%, transparent 70%);
+    top: -150px; right: -100px;
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(61,170,116,0.12) 0%, transparent 70%);
+    bottom: -80px; left: 40px;
+    border-radius: 50%;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(244,166,35,0.2);
+    border: 1px solid rgba(244,166,35,0.5);
+    color: var(--sun);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .hero h1 span { color: var(--sun); }
+  .hero p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.72);
+    max-width: 600px;
+    font-weight: 300;
+    position: relative;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .stat-chip {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-align: center;
+  }
+  .stat-chip .num {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--sun);
+    display: block;
+  }
+  .stat-chip .lbl {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* MAIN CONTENT */
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+
+  /* SECTION HEADERS */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--clay);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--sky);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  /* TECH STACK */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .tech-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tech-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .tech-card.kotlin::before { background: linear-gradient(90deg, #7F52FF, #B470FF); }
+  .tech-card.java::before { background: linear-gradient(90deg, #F89820, #F4C842); }
+  .tech-card.cpp::before { background: linear-gradient(90deg, #00599C, #0089CC); }
+  .tech-card.room::before { background: linear-gradient(90deg, var(--mint), #2DD4BF); }
+  .tech-card.compose::before { background: linear-gradient(90deg, #4285F4, #34A853); }
+
+  .tech-icon { font-size: 28px; margin-bottom: 10px; }
+  .tech-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .tech-role { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .tech-tag {
+    display: inline-block;
+    margin-top: 10px;
+    background: var(--light);
+    border: 1px solid var(--border);
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 5px;
+    color: var(--clay);
+  }
+
+  /* SCREENS */
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .screen-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .screen-header {
+    padding: 14px 18px 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .screen-num {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .screen-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .screen-file { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
+  .screen-body { padding: 14px 18px; }
+  .screen-desc { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .screen-elements { list-style: none; }
+  .screen-elements li {
+    font-size: 12px;
+    color: var(--ink);
+    padding: 3px 0;
+    border-bottom: 1px dashed var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .screen-elements li:last-child { border-bottom: none; }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Color themes per screen */
+  .s1 .screen-num { background: #FEF3C7; color: #D97706; }
+  .s2 .screen-num { background: #DCFCE7; color: #16A34A; }
+  .s3 .screen-num { background: #DBEAFE; color: #2563EB; }
+  .s4 .screen-num { background: #FCE7F3; color: #9D174D; }
+  .s5 .screen-num { background: #FEE2E2; color: #DC2626; }
+  .s6 .screen-num { background: #F3E8FF; color: #7C3AED; }
+  .s7 .screen-num { background: #FFEDD5; color: #C2410C; }
+  .s8 .screen-num { background: #CFFAFE; color: #0E7490; }
+  .s9 .screen-num { background: #FDF4FF; color: #A21CAF; }
+  .s10 .screen-num { background: #F0FDF4; color: #15803D; }
+  .s11 .screen-num { background: #FFF7ED; color: #C2410C; }
+  .s12 .screen-num { background: #F1F5F9; color: #475569; }
+
+  .s1 .dot { background: #D97706; }
+  .s2 .dot { background: #16A34A; }
+  .s3 .dot { background: #2563EB; }
+  .s4 .dot { background: #9D174D; }
+  .s5 .dot { background: #DC2626; }
+  .s6 .dot { background: #7C3AED; }
+  .s7 .dot { background: #C2410C; }
+  .s8 .dot { background: #0E7490; }
+  .s9 .dot { background: #A21CAF; }
+  .s10 .dot { background: #15803D; }
+  .s11 .dot { background: #C2410C; }
+  .s12 .dot { background: #475569; }
+
+  /* FILE STRUCTURE */
+  .file-tree {
+    background: #0D1117;
+    border-radius: 16px;
+    padding: 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 2;
+    margin-bottom: 48px;
+    overflow-x: auto;
+  }
+  .ft-folder { color: var(--sun); font-weight: 700; }
+  .ft-kotlin { color: #B470FF; }
+  .ft-java { color: #F4C842; }
+  .ft-cpp { color: #4FC3F7; }
+  .ft-xml { color: #81C784; }
+  .ft-json { color: #FFB74D; }
+  .ft-other { color: #90A4AE; }
+  .ft-comment { color: #555E6C; font-style: italic; }
+  .ft-indent1 { padding-left: 18px; }
+  .ft-indent2 { padding-left: 36px; }
+  .ft-indent3 { padding-left: 54px; }
+  .ft-indent4 { padding-left: 72px; }
+  .ft-indent5 { padding-left: 90px; }
+  .ft-count {
+    color: var(--mint);
+    font-size: 11px;
+    margin-left: 8px;
+  }
+
+  /* ARCHITECTURE */
+  .arch-flow {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 48px;
+  }
+  .arch-layer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .arch-box {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .arch-arrow {
+    font-size: 20px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .arch-side {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    min-width: 140px;
+  }
+
+  .layer-ui { background: #EDE9FE; color: #5B21B6; }
+  .layer-vm { background: #DBEAFE; color: #1D4ED8; }
+  .layer-repo { background: #DCFCE7; color: #15803D; }
+  .layer-db { background: #FEF3C7; color: #92400E; }
+  .layer-cpp { background: #FFE4E6; color: #9F1239; }
+
+  /* DB SCHEMA */
+  .db-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .db-table {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .db-table-header {
+    background: var(--sky);
+    color: white;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .db-col {
+    padding: 7px 16px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .db-col:last-child { border-bottom: none; }
+  .db-col-name { font-weight: 500; }
+  .db-col-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--clay);
+    background: var(--light);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .pk { color: var(--sun); font-weight: 700; }
+
+  /* DESIGN SYSTEM */
+  .design-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+  .design-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .design-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--sky);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .color-swatch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .swatch {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .swatch-info .name { font-size: 13px; font-weight: 600; }
+  .swatch-info .hex { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+
+  .typo-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .typo-item:last-child { border-bottom: none; }
+  .typo-sample { margin-bottom: 2px; }
+  .typo-spec { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--muted); }
+
+  /* PHASE TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 48px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--sun), var(--mint), var(--sky), var(--clay));
+  }
+  .phase {
+    position: relative;
+    margin-bottom: 28px;
+  }
+  .phase::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+  .phase-1::before { background: var(--sun); }
+  .phase-2::before { background: var(--mint); }
+  .phase-3::before { background: var(--sky); }
+  .phase-4::before { background: var(--clay); }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .phase-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .phase-1 .phase-label { background: #FEF3C7; color: #92400E; }
+  .phase-2 .phase-label { background: #DCFCE7; color: #15803D; }
+  .phase-3 .phase-label { background: #DBEAFE; color: #1D4ED8; }
+  .phase-4 .phase-label { background: #FFE4E6; color: #9F1239; }
+
+  .phase-title { font-size: 16px; font-weight: 700; }
+  .phase-items { list-style: none; }
+  .phase-items li {
+    font-size: 13px;
+    color: var(--muted);
+    padding: 3px 0;
+    padding-left: 14px;
+    position: relative;
+  }
+  .phase-items li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--clay);
+  }
+
+  /* FILE COUNT TABLE */
+  .count-table {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+  .count-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .count-table th {
+    background: var(--sky);
+    color: white;
+    padding: 12px 18px;
+    text-align: left;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .count-table td {
+    padding: 10px 18px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .count-table tr:last-child td { border-bottom: none; }
+  .count-table tr:nth-child(even) td { background: var(--light); }
+  .count-table .total td { font-weight: 800; background: #FEF3C7 !important; color: var(--sky); }
+  .count-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--clay); }
+
+  /* ADDITIONAL RECOMMENDATIONS */
+  .recs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .rec-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .rec-icon { font-size: 22px; margin-bottom: 8px; }
+  .rec-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; color: var(--sky); }
+  .rec-desc { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+
+  /* FOOTER */
+  .footer {
+    background: var(--sky);
+    color: rgba(255,255,255,0.7);
+    padding: 30px 40px;
+    text-align: center;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .footer strong { color: var(--sun); }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    .design-row { grid-template-columns: 1fr; }
+    .recs-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 26px; }
+    .stat-chip .num { font-size: 20px; }
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 48px 0; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div style="position:relative; max-width:960px; margin:0 auto; padding:0 20px;">
+    <div class="hero-badge">PRODUCT & TECHNICAL BLUEPRINT</div>
+    <h1>RemoteSchools <span>Uganda</span><br>Android App — Full Plan</h1>
+    <p>Kotlin + Jetpack Compose · Java · C++ (NDK) · Room · MVVM · Fully Offline-First · PLE / UCE / UACE</p>
+    <div class="stats-row">
+      <div class="stat-chip">
+        <span class="num">12</span>
+        <span class="lbl">Screens</span>
+      </div>
+      <div class="stat-chip">
+        <span class="num">~130</span>
+        <span class="lbl">Total Files</span>
+      </div>
+      <div class="stat-chip">
+        <span class="num">8</span>
+        <span class="lbl">DB Tables</span>
+      </div>
+      <div class="stat-chip">
+        <span class="num">4</span>
+        <span class="lbl">Dev Phases</span>
+      </div>
+      <div class="stat-chip">
+        <span class="num">3</span>
+        <span class="lbl">Languages</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TECH STACK -->
+  <p class="section-label">01 — Core Technologies</p>
+  <h2 class="section-title">Technology Stack</h2>
+  <div class="tech-grid">
+    <div class="tech-card kotlin">
+      <div class="tech-icon">🟣</div>
+      <div class="tech-name">Kotlin</div>
+      <div class="tech-role">Primary language. All ViewModels, Repositories, Use Cases, UI logic, Navigation, Compose screens.</div>
+      <span class="tech-tag">PRIMARY</span>
+    </div>
+    <div class="tech-card java">
+      <div class="tech-icon">☕</div>
+      <div class="tech-name">Java</div>
+      <div class="tech-role">JNI bridge layer to C++, legacy utility classes, backup encryption utilities, PDF rendering helpers.</div>
+      <span class="tech-tag">BRIDGE / UTILITIES</span>
+    </div>
+    <div class="tech-card cpp">
+      <div class="tech-icon">⚙️</div>
+      <div class="tech-name">C++ (NDK)</div>
+      <div class="tech-role">AES-GCM encryption engine, content compression/decompression, future AI scoring module.</div>
+      <span class="tech-tag">NATIVE PERFORMANCE</span>
+    </div>
+    <div class="tech-card compose">
+      <div class="tech-icon">🎨</div>
+      <div class="tech-name">Jetpack Compose</div>
+      <div class="tech-role">All UI screens built declaratively. Custom composables for lesson reader, progress bars, quiz cards.</div>
+      <span class="tech-tag">UI FRAMEWORK</span>
+    </div>
+    <div class="tech-card room">
+      <div class="tech-icon">🗄️</div>
+      <div class="tech-name">Room + SQLite</div>
+      <div class="tech-role">All offline data: lessons, progress, quiz results, bookmarks, notes, past papers metadata.</div>
+      <span class="tech-tag">OFFLINE STORAGE</span>
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <p class="section-label">02 — Architecture</p>
+  <h2 class="section-title">MVVM + Clean Architecture Layers</h2>
+  <div class="arch-flow">
+    <div class="arch-layer">
+      <div class="arch-side">Compose Screens<br>@Composable functions</div>
+      <div class="arch-box layer-ui">🖥 UI Layer — Jetpack Compose Screens + Custom Composables</div>
+    </div>
+    <div class="arch-layer" style="padding-left:20px;">
+      <div class="arch-side" style="color:transparent">-</div>
+      <div style="font-size:18px; color:var(--muted); padding-left:8px;">↕ StateFlow / LiveData</div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-side">ViewModels<br>hiltViewModel()</div>
+      <div class="arch-box layer-vm">📦 ViewModel Layer — State holders, event processors, Hilt injected</div>
+    </div>
+    <div class="arch-layer" style="padding-left:20px;">
+      <div class="arch-side" style="color:transparent">-</div>
+      <div style="font-size:18px; color:var(--muted); padding-left:8px;">↕ Use Cases (domain)</div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-side">Repositories<br>interface + impl</div>
+      <div class="arch-box layer-repo">🔄 Repository Layer — Data abstraction, coordinates Room + File storage</div>
+    </div>
+    <div class="arch-layer" style="padding-left:20px;">
+      <div class="arch-side" style="color:transparent">-</div>
+      <div style="font-size:18px; color:var(--muted); padding-left:8px;">↕ Room DAOs / File I/O</div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-side">Room DB<br>+ Internal Storage</div>
+      <div class="arch-box layer-db">🗄️ Data Layer — Room (SQLite), Content Files (HTML→native rendered), PDFs</div>
+    </div>
+    <div class="arch-layer" style="padding-left:20px;">
+      <div class="arch-side" style="color:transparent">-</div>
+      <div style="font-size:18px; color:var(--muted); padding-left:8px;">↕ JNI / Java Bridge</div>
+    </div>
+    <div class="arch-layer">
+      <div class="arch-side">libremote.so<br>CMakeLists.txt</div>
+      <div class="arch-box layer-cpp">⚙️ Native Layer — C++ AES-GCM encryption, compression, scoring algorithms</div>
+    </div>
+  </div>
+
+  <!-- SCREENS -->
+  <p class="section-label">03 — App Screens</p>
+  <h2 class="section-title">12 Screens — Full Navigation Map</h2>
+  <div class="screens-grid">
+
+    <div class="screen-card s1">
+      <div class="screen-header">
+        <div class="screen-num">01</div>
+        <div>
+          <div class="screen-name">Splash / Onboarding</div>
+          <div class="screen-file">SplashScreen.kt · OnboardingScreen.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">App intro, grade/name setup on first launch. Shown once then skipped.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>App logo + tagline animation</li>
+          <li><span class="dot"></span>Grade selector (P1–S6)</li>
+          <li><span class="dot"></span>Student name entry</li>
+          <li><span class="dot"></span>Language selection (EN/LG)</li>
+          <li><span class="dot"></span>DataStore preference save</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s2">
+      <div class="screen-header">
+        <div class="screen-num">02</div>
+        <div>
+          <div class="screen-name">Home Dashboard</div>
+          <div class="screen-file">HomeScreen.kt · HomeViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Main hub. Shows grade, continuation card, subject tiles, weekly goal.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Student greeting + grade badge</li>
+          <li><span class="dot"></span>"Continue Learning" card</li>
+          <li><span class="dot"></span>Subject grid with progress %</li>
+          <li><span class="dot"></span>Daily streak indicator</li>
+          <li><span class="dot"></span>Quick access: Past Papers</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s3">
+      <div class="screen-header">
+        <div class="screen-num">03</div>
+        <div>
+          <div class="screen-name">Subject Dashboard</div>
+          <div class="screen-file">SubjectScreen.kt · SubjectViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Per-subject overview with term-organized units and lesson completion.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Subject header + overall progress</li>
+          <li><span class="dot"></span>Term accordion (Term 1/2/3)</li>
+          <li><span class="dot"></span>Unit list with lesson count</li>
+          <li><span class="dot"></span>Completion badges per unit</li>
+          <li><span class="dot"></span>Start/Resume CTA button</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s4">
+      <div class="screen-header">
+        <div class="screen-num">04</div>
+        <div>
+          <div class="screen-name">Lesson Reader</div>
+          <div class="screen-file">LessonScreen.kt · LessonViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Core learning screen. Renders lesson content natively using Compose — NO WebView.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Custom Compose text renderer</li>
+          <li><span class="dot"></span>Inline diagram/image display</li>
+          <li><span class="dot"></span>Bookmark toggle button</li>
+          <li><span class="dot"></span>Reading progress indicator</li>
+          <li><span class="dot"></span>Next → Exercise CTA</li>
+          <li><span class="dot"></span>Font size adjustment</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s5">
+      <div class="screen-header">
+        <div class="screen-num">05</div>
+        <div>
+          <div class="screen-name">Exercise / Practice</div>
+          <div class="screen-file">ExerciseScreen.kt · ExerciseViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Interactive practice after each lesson. Immediate feedback mode.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Multiple choice composable</li>
+          <li><span class="dot"></span>Fill-in-the-blank composable</li>
+          <li><span class="dot"></span>Matching pairs composable</li>
+          <li><span class="dot"></span>Instant correct/wrong feedback</li>
+          <li><span class="dot"></span>Hints toggle (optional)</li>
+          <li><span class="dot"></span>Score summary at end</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s6">
+      <div class="screen-header">
+        <div class="screen-num">06</div>
+        <div>
+          <div class="screen-name">Quiz / Exam Mode</div>
+          <div class="screen-file">QuizScreen.kt · QuizViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Timed, strict exam simulation. No hints. Covers PLE/UCE/UACE formats.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Countdown timer (Compose)</li>
+          <li><span class="dot"></span>Question pager / stepper</li>
+          <li><span class="dot"></span>No-hint enforcement</li>
+          <li><span class="dot"></span>Auto-submit on timeout</li>
+          <li><span class="dot"></span>Full results breakdown</li>
+          <li><span class="dot"></span>Score saved to Room DB</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s7">
+      <div class="screen-header">
+        <div class="screen-num">07</div>
+        <div>
+          <div class="screen-name">Past Papers</div>
+          <div class="screen-file">PastPapersScreen.kt · PaperViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Browse and open past exam papers + marking guides by year and subject.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Year filter (2010–2024)</li>
+          <li><span class="dot"></span>Subject + Level filter</li>
+          <li><span class="dot"></span>PDF viewer (PdfRenderer)</li>
+          <li><span class="dot"></span>Marking guide toggle</li>
+          <li><span class="dot"></span>Download status indicator</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s8">
+      <div class="screen-header">
+        <div class="screen-num">08</div>
+        <div>
+          <div class="screen-name">Progress & Reports</div>
+          <div class="screen-file">ProgressScreen.kt · ProgressViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Analytics dashboard showing completion, scores, weak areas, streaks.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Overall completion ring chart</li>
+          <li><span class="dot"></span>Per-subject progress bars</li>
+          <li><span class="dot"></span>Quiz score history</li>
+          <li><span class="dot"></span>Weak topics highlighted</li>
+          <li><span class="dot"></span>Study streak calendar</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s9">
+      <div class="screen-header">
+        <div class="screen-num">09</div>
+        <div>
+          <div class="screen-name">Notes</div>
+          <div class="screen-file">NotesScreen.kt · NotesViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Student personal notes + any teacher-provided notes per lesson.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Create/Edit/Delete notes</li>
+          <li><span class="dot"></span>Link note to lesson</li>
+          <li><span class="dot"></span>Teacher note display (read-only)</li>
+          <li><span class="dot"></span>Search notes</li>
+          <li><span class="dot"></span>Export to text file</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s10">
+      <div class="screen-header">
+        <div class="screen-num">10</div>
+        <div>
+          <div class="screen-name">Bookmarks</div>
+          <div class="screen-file">BookmarksScreen.kt · BookmarkViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">All saved lessons and questions in one place for quick revision.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Bookmarked lessons list</li>
+          <li><span class="dot"></span>Saved questions</li>
+          <li><span class="dot"></span>Filter by subject</li>
+          <li><span class="dot"></span>Tap to open lesson/question</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s11">
+      <div class="screen-header">
+        <div class="screen-num">11</div>
+        <div>
+          <div class="screen-name">RemoteSchools Web</div>
+          <div class="screen-file">WebScreen.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">Optional online extension via restricted WebView to remoteschools.co.ug only.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>WebView (domain-locked)</li>
+          <li><span class="dot"></span>Offline detection banner</li>
+          <li><span class="dot"></span>Back/Forward navigation bar</li>
+          <li><span class="dot"></span>No JavaScript needed for core</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-card s12">
+      <div class="screen-header">
+        <div class="screen-num">12</div>
+        <div>
+          <div class="screen-name">Settings</div>
+          <div class="screen-file">SettingsScreen.kt · SettingsViewModel.kt</div>
+        </div>
+      </div>
+      <div class="screen-body">
+        <p class="screen-desc">App configuration: language, storage, backup/restore, profile, theme.</p>
+        <ul class="screen-elements">
+          <li><span class="dot"></span>Language toggle EN / Luganda</li>
+          <li><span class="dot"></span>Storage usage display</li>
+          <li><span class="dot"></span>Manual backup trigger</li>
+          <li><span class="dot"></span>Restore from backup</li>
+          <li><span class="dot"></span>Wi-Fi only download toggle</li>
+          <li><span class="dot"></span>Grade/profile change</li>
+          <li><span class="dot"></span>Clear progress (with confirm)</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DATABASE -->
+  <p class="section-label">04 — Data Layer</p>
+  <h2 class="section-title">Room Database — 8 Tables</h2>
+  <div class="db-grid">
+    <div class="db-table">
+      <div class="db-table-header">grades</div>
+      <div class="db-col"><span class="db-col-name pk">id</span><span class="db-col-type">INTEGER PK</span></div>
+      <div class="db-col"><span class="db-col-name">name</span><span class="db-col-type">TEXT</span></div>
+      <div class="db-col"><span class="db-col-name">level</span><span class="db-col-type">TEXT</span></div>
+      <div class="db-col"><span class="db-col-name">curriculum</span><span class="db-col-type">TEXT</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">subjects</div>
+      <div class="db-col"><span class="db-col-name pk">id</span><span class="db-col-type">INTEGER PK</span></div>
+      <div class="db-col"><span class="db-col-name">gradeId</span><span class="db-col-type">FK → grades</span></div>
+      <div class="db-col"><span class="db-col-name">name</span><span class="db-col-type">TEXT</span></div>
+      <div class="db-col"><span class="db-col-name">iconPath</span><span class="db-col-type">TEXT</span></div>
+      <div class="db-col"><span class="db-col-name">colorHex</span><span class="db-col-type">TEXT</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">lessons</div>
+      <div class="db-col"><span class="db-col-name pk">id</span><span class="db-col-type">INTEGER PK</span></div>
+      <div class="db-col"><span class="db-col-name">unitId</span><span class="db-col-type">FK → units</span></div>
+      <div class="db-col"><span class="db-col-name">title</span><span class="db-col-type">TEXT</span></div>
+      <div class="db-col"><span class="db-col-name">contentPath</span><span class="db-col-type">TEXT</span></div>
+      <div class="db-col"><span class="db-col-name">orderIndex</span><span class="db-col-type">INTEGER</span></div>
+      <div class="db-col"><span class="db-col-name">estimatedMins</span><span class="db-col-type">INTEGER</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">progress</div>
+      <div class="db-col"><span class="db-col-name pk">id</span><span class="db-col-type">INTEGER PK</span></div>
+      <div class="db-col"><span class="db-col-name">lessonId</span><span class="db-col-type">FK → lessons</span></div>
+      <div class="db-col"><span class="db-col-name">isCompleted</span><span class="db-col-type">BOOLEAN</span></div>
+      <div class="db-col"><span class="db-col-name">completedAt</span><span class="db-col-type">TIMESTAMP</span></div>
+      <div class="db-col"><span class="db-col-name">scrollPosition</span><span class="db-col-type">INTEGER</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">quiz_results</div>
+      <div class="db-col"><span class="db-col-name pk">id</span><span class="db-col-type">INTEGER PK</span></div>
+      <div class="db-col"><span class="db-col-name">quizId</span><span class="db-col-type">FK → quizzes</span></div>
+      <div class="db-col"><span class="db-col-name">score</span><span class="db-col-type">REAL</span></div>
+      <div class="db-col"><span class="db-col-name">totalQuestions</span><span class="db-col-type">INTEGER</span></div>
+      <div class="db-col"><span class="db-col-name">timeTakenSec</span><span class="db-col-type">INTEGER</span></div>
+      <div class="db-col"><span class="db-col-name">takenAt</span><span class="db-col-type">TIMESTAMP</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">bookmarks</div>
+      <div class="db-col"><span class="db-col-name pk">id</span><span class="db-col-type">INTEGER PK</span></div>
+      <div class="db-col"><span class="db-col-name">lessonId</span><span class="db-col-type">FK → lessons</span></div>
+      <div class="db-col"><span class="db-col-name">questionId</span><span class="db-col-type">INTEGER?</span></div>
+      <div class="db-col"><span class="db-col-name">createdAt</span><span class="db-col-type">TIMESTAMP</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">notes</div>
+      <div class="db-col"><span class="db-col-name pk">id</span><span class="db-col-type">INTEGER PK</span></div>
+      <div class="db-col"><span class="db-col-name">lessonId</span><span class="db-col-type">FK → lessons</span></div>
+      <div class="db-col"><span class="db-col-name">content</span><span class="db-col-type">TEXT</span></div>
+      <div class="db-col"><span class="db-col-name">isTeacherNote</span><span class="db-col-type">BOOLEAN</span></div>
+      <div class="db-col"><span class="db-col-name">updatedAt</span><span class="db-col-type">TIMESTAMP</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">past_papers</div>
+      <div class="db-col"><span class="db-col-name pk">id</span><span class="db-col-type">INTEGER PK</span></div>
+      <div class="db-col"><span class="db-col-name">subjectId</span><span class="db-col-type">FK → subjects</span></div>
+      <div class="db-col"><span class="db-col-name">year</span><span class="db-col-type">INTEGER</span></div>
+      <div class="db-col"><span class="db-col-name">pdfPath</span><span class="db-col-type">TEXT</span></div>
+      <div class="db-col"><span class="db-col-name">markingSchemePath</span><span class="db-col-type">TEXT?</span></div>
+      <div class="db-col"><span class="db-col-name">examType</span><span class="db-col-type">TEXT</span></div>
+    </div>
+  </div>
+
+  <!-- FILE STRUCTURE -->
+  <p class="section-label">05 — Project Structure</p>
+  <h2 class="section-title">Full File Tree (~130 files)</h2>
+  <div class="file-tree">
+    <div class="ft-folder">📁 app/</div>
+    <div class="ft-indent1 ft-folder">📁 src/main/</div>
+    <div class="ft-indent2 ft-folder">📁 cpp/ <span class="ft-count">← C++ Native</span></div>
+    <div class="ft-indent3 ft-cpp">CMakeLists.txt</div>
+    <div class="ft-indent3 ft-cpp">encryption.cpp <span class="ft-comment">// AES-GCM via OpenSSL</span></div>
+    <div class="ft-indent3 ft-cpp">encryption.h</div>
+    <div class="ft-indent3 ft-cpp">compression.cpp <span class="ft-comment">// zlib content compression</span></div>
+    <div class="ft-indent3 ft-cpp">compression.h</div>
+    <div class="ft-indent3 ft-cpp">scoring.cpp <span class="ft-comment">// future AI scoring</span></div>
+    <div class="ft-indent3 ft-cpp">scoring.h</div>
+    <div class="ft-indent2 ft-folder">📁 java/ug/remoteschools/</div>
+    <div class="ft-indent3 ft-folder">📁 jni/ <span class="ft-count">← Java ↔ C++ bridge</span></div>
+    <div class="ft-indent4 ft-java">NativeEncryption.java</div>
+    <div class="ft-indent4 ft-java">NativeCompression.java</div>
+    <div class="ft-indent4 ft-java">NativeScoring.java</div>
+    <div class="ft-indent3 ft-folder">📁 util/ <span class="ft-count">← Java utilities</span></div>
+    <div class="ft-indent4 ft-java">PdfRendererHelper.java</div>
+    <div class="ft-indent4 ft-java">FileExportUtil.java</div>
+    <div class="ft-indent4 ft-java">ContentParser.java <span class="ft-comment">// parses content format → Compose model</span></div>
+    <div class="ft-indent2 ft-folder">📁 kotlin/ug/remoteschools/</div>
+
+    <div class="ft-indent3 ft-folder">📁 di/ <span class="ft-count">← Hilt Dependency Injection</span></div>
+    <div class="ft-indent4 ft-kotlin">AppModule.kt</div>
+    <div class="ft-indent4 ft-kotlin">DatabaseModule.kt</div>
+    <div class="ft-indent4 ft-kotlin">RepositoryModule.kt</div>
+
+    <div class="ft-indent3 ft-folder">📁 data/</div>
+    <div class="ft-indent4 ft-folder">📁 db/</div>
+    <div class="ft-indent5 ft-kotlin">AppDatabase.kt</div>
+    <div class="ft-indent5 ft-kotlin">GradeDao.kt</div>
+    <div class="ft-indent5 ft-kotlin">SubjectDao.kt</div>
+    <div class="ft-indent5 ft-kotlin">LessonDao.kt</div>
+    <div class="ft-indent5 ft-kotlin">ProgressDao.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizResultDao.kt</div>
+    <div class="ft-indent5 ft-kotlin">BookmarkDao.kt</div>
+    <div class="ft-indent5 ft-kotlin">NoteDao.kt</div>
+    <div class="ft-indent5 ft-kotlin">PastPaperDao.kt</div>
+    <div class="ft-indent4 ft-folder">📁 entity/</div>
+    <div class="ft-indent5 ft-kotlin">GradeEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">SubjectEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">UnitEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">LessonEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">ProgressEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizResultEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuestionEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">BookmarkEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">NoteEntity.kt</div>
+    <div class="ft-indent5 ft-kotlin">PastPaperEntity.kt</div>
+    <div class="ft-indent4 ft-folder">📁 repository/</div>
+    <div class="ft-indent5 ft-kotlin">LessonRepository.kt</div>
+    <div class="ft-indent5 ft-kotlin">LessonRepositoryImpl.kt</div>
+    <div class="ft-indent5 ft-kotlin">ProgressRepository.kt</div>
+    <div class="ft-indent5 ft-kotlin">ProgressRepositoryImpl.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizRepository.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizRepositoryImpl.kt</div>
+    <div class="ft-indent5 ft-kotlin">BackupRepository.kt</div>
+    <div class="ft-indent5 ft-kotlin">BackupRepositoryImpl.kt</div>
+    <div class="ft-indent4 ft-folder">📁 datastore/</div>
+    <div class="ft-indent5 ft-kotlin">UserPreferencesDataStore.kt</div>
+    <div class="ft-indent5 ft-kotlin">UserPreferences.kt</div>
+
+    <div class="ft-indent3 ft-folder">📁 domain/</div>
+    <div class="ft-indent4 ft-folder">📁 model/</div>
+    <div class="ft-indent5 ft-kotlin">Grade.kt</div>
+    <div class="ft-indent5 ft-kotlin">Subject.kt</div>
+    <div class="ft-indent5 ft-kotlin">Lesson.kt</div>
+    <div class="ft-indent5 ft-kotlin">LessonContent.kt <span class="ft-comment">// sealed: Text, Image, Diagram, Table</span></div>
+    <div class="ft-indent5 ft-kotlin">Question.kt <span class="ft-comment">// sealed: MCQ, FillIn, Matching</span></div>
+    <div class="ft-indent5 ft-kotlin">QuizResult.kt</div>
+    <div class="ft-indent5 ft-kotlin">Progress.kt</div>
+    <div class="ft-indent4 ft-folder">📁 usecase/</div>
+    <div class="ft-indent5 ft-kotlin">GetLessonUseCase.kt</div>
+    <div class="ft-indent5 ft-kotlin">MarkLessonCompleteUseCase.kt</div>
+    <div class="ft-indent5 ft-kotlin">SubmitQuizResultUseCase.kt</div>
+    <div class="ft-indent5 ft-kotlin">GetProgressUseCase.kt</div>
+    <div class="ft-indent5 ft-kotlin">BackupDataUseCase.kt</div>
+    <div class="ft-indent5 ft-kotlin">RestoreDataUseCase.kt</div>
+    <div class="ft-indent5 ft-kotlin">GetWeakTopicsUseCase.kt</div>
+
+    <div class="ft-indent3 ft-folder">📁 ui/</div>
+    <div class="ft-indent4 ft-folder">📁 theme/</div>
+    <div class="ft-indent5 ft-kotlin">Color.kt</div>
+    <div class="ft-indent5 ft-kotlin">Typography.kt</div>
+    <div class="ft-indent5 ft-kotlin">Theme.kt</div>
+    <div class="ft-indent5 ft-kotlin">Shape.kt</div>
+    <div class="ft-indent4 ft-folder">📁 navigation/</div>
+    <div class="ft-indent5 ft-kotlin">AppNavigation.kt</div>
+    <div class="ft-indent5 ft-kotlin">Screen.kt <span class="ft-comment">// sealed class routes</span></div>
+    <div class="ft-indent5 ft-kotlin">NavGraph.kt</div>
+    <div class="ft-indent4 ft-folder">📁 components/ <span class="ft-count">← Shared composables</span></div>
+    <div class="ft-indent5 ft-kotlin">ProgressRing.kt</div>
+    <div class="ft-indent5 ft-kotlin">SubjectCard.kt</div>
+    <div class="ft-indent5 ft-kotlin">LessonCard.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizTimerBar.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuestionCard.kt</div>
+    <div class="ft-indent5 ft-kotlin">McqOption.kt</div>
+    <div class="ft-indent5 ft-kotlin">FillInField.kt</div>
+    <div class="ft-indent5 ft-kotlin">MatchingItem.kt</div>
+    <div class="ft-indent5 ft-kotlin">BottomNavBar.kt</div>
+    <div class="ft-indent5 ft-kotlin">EmptyState.kt</div>
+    <div class="ft-indent5 ft-kotlin">LoadingSpinner.kt</div>
+    <div class="ft-indent5 ft-kotlin">OfflineBanner.kt</div>
+    <div class="ft-indent5 ft-kotlin">ContentBlock.kt <span class="ft-comment">// renders text/image/table natively</span></div>
+    <div class="ft-indent4 ft-folder">📁 screens/</div>
+    <div class="ft-indent5 ft-kotlin">SplashScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">OnboardingScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">HomeScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">SubjectScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">LessonScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">ExerciseScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizResultScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">PastPapersScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">ProgressScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">NotesScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">BookmarksScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">WebScreen.kt</div>
+    <div class="ft-indent5 ft-kotlin">SettingsScreen.kt</div>
+    <div class="ft-indent4 ft-folder">📁 viewmodel/</div>
+    <div class="ft-indent5 ft-kotlin">HomeViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">SubjectViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">LessonViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">ExerciseViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">QuizViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">PastPapersViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">ProgressViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">NotesViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">BookmarksViewModel.kt</div>
+    <div class="ft-indent5 ft-kotlin">SettingsViewModel.kt</div>
+
+    <div class="ft-indent3 ft-folder">📁 worker/ <span class="ft-count">← WorkManager background tasks</span></div>
+    <div class="ft-indent4 ft-kotlin">AutoBackupWorker.kt</div>
+    <div class="ft-indent4 ft-kotlin">ContentSyncWorker.kt</div>
+
+    <div class="ft-indent3 ft-kotlin">MainActivity.kt</div>
+    <div class="ft-indent3 ft-kotlin">RemoteSchoolsApp.kt <span class="ft-comment">// Application class + Hilt</span></div>
+
+    <div class="ft-indent2 ft-folder">📁 res/</div>
+    <div class="ft-indent3 ft-xml">values/strings.xml <span class="ft-comment">// English</span></div>
+    <div class="ft-indent3 ft-xml">values-lg/strings.xml <span class="ft-comment">// Luganda</span></div>
+    <div class="ft-indent3 ft-xml">values/colors.xml</div>
+    <div class="ft-indent3 ft-xml">values/themes.xml</div>
+    <div class="ft-indent3 ft-xml">drawable/ <span class="ft-comment">// vector icons, subject icons</span></div>
+    <div class="ft-indent3 ft-xml">font/ <span class="ft-comment">// bundled fonts (offline)</span></div>
+
+    <div class="ft-indent2 ft-folder">📁 assets/</div>
+    <div class="ft-indent3 ft-folder">📁 content/ <span class="ft-comment">// lesson content files</span></div>
+    <div class="ft-indent3 ft-folder">📁 papers/ <span class="ft-comment">// past paper PDFs</span></div>
+    <div class="ft-indent3 ft-json">seed_data.json <span class="ft-comment">// initial DB seed</span></div>
+
+    <div class="ft-indent2 ft-xml">AndroidManifest.xml</div>
+    <div class="ft-indent1 ft-other">build.gradle.kts</div>
+    <div class="ft-indent1 ft-other">proguard-rules.pro</div>
+    <div class="ft-folder">build.gradle.kts (project)</div>
+    <div class="ft-folder">settings.gradle.kts</div>
+    <div class="ft-folder">gradle.properties</div>
+  </div>
+
+  <!-- FILE COUNT TABLE -->
+  <p class="section-label">06 — File Count Summary</p>
+  <h2 class="section-title">Files by Category</h2>
+  <div class="count-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Language</th>
+          <th>Count</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Screens (Composables)</td>
+          <td>Kotlin</td>
+          <td class="count-num">14</td>
+          <td>One .kt file per screen</td>
+        </tr>
+        <tr>
+          <td>ViewModels</td>
+          <td>Kotlin</td>
+          <td class="count-num">10</td>
+          <td>One per screen (excluding splash/web)</td>
+        </tr>
+        <tr>
+          <td>Shared UI Components</td>
+          <td>Kotlin</td>
+          <td class="count-num">13</td>
+          <td>Reusable Composables</td>
+        </tr>
+        <tr>
+          <td>Room DAOs</td>
+          <td>Kotlin</td>
+          <td class="count-num">9</td>
+          <td>One per table</td>
+        </tr>
+        <tr>
+          <td>Room Entities</td>
+          <td>Kotlin</td>
+          <td class="count-num">11</td>
+          <td>DB table data classes</td>
+        </tr>
+        <tr>
+          <td>Repositories (interface + impl)</td>
+          <td>Kotlin</td>
+          <td class="count-num">8</td>
+          <td>4 interfaces + 4 implementations</td>
+        </tr>
+        <tr>
+          <td>Domain Models</td>
+          <td>Kotlin</td>
+          <td class="count-num">7</td>
+          <td>Clean domain objects</td>
+        </tr>
+        <tr>
+          <td>Use Cases</td>
+          <td>Kotlin</td>
+          <td class="count-num">7</td>
+          <td>Business logic units</td>
+        </tr>
+        <tr>
+          <td>DI Modules (Hilt)</td>
+          <td>Kotlin</td>
+          <td class="count-num">3</td>
+          <td>App, DB, Repository modules</td>
+        </tr>
+        <tr>
+          <td>Theme / Navigation</td>
+          <td>Kotlin</td>
+          <td class="count-num">7</td>
+          <td>Color, Type, Theme, Shape, NavGraph</td>
+        </tr>
+        <tr>
+          <td>Workers (WorkManager)</td>
+          <td>Kotlin</td>
+          <td class="count-num">2</td>
+          <td>AutoBackup, ContentSync</td>
+        </tr>
+        <tr>
+          <td>DataStore</td>
+          <td>Kotlin</td>
+          <td class="count-num">2</td>
+          <td>Preferences storage</td>
+        </tr>
+        <tr>
+          <td>App Entry Points</td>
+          <td>Kotlin</td>
+          <td class="count-num">2</td>
+          <td>MainActivity + Application class</td>
+        </tr>
+        <tr>
+          <td>JNI Bridge Classes</td>
+          <td>Java</td>
+          <td class="count-num">3</td>
+          <td>NativeEncryption, Compression, Scoring</td>
+        </tr>
+        <tr>
+          <td>Java Utilities</td>
+          <td>Java</td>
+          <td class="count-num">3</td>
+          <td>PdfHelper, FileExport, ContentParser</td>
+        </tr>
+        <tr>
+          <td>C++ Native Files</td>
+          <td>C++</td>
+          <td class="count-num">7</td>
+          <td>3x .cpp + 3x .h + CMakeLists</td>
+        </tr>
+        <tr>
+          <td>Resource XML files</td>
+          <td>XML</td>
+          <td class="count-num">6</td>
+          <td>strings×2, colors, themes, manifest, drawables dir</td>
+        </tr>
+        <tr>
+          <td>Build / Config files</td>
+          <td>KTS/Other</td>
+          <td class="count-num">5</td>
+          <td>Gradle, ProGuard, settings</td>
+        </tr>
+        <tr class="total">
+          <td><strong>TOTAL</strong></td>
+          <td></td>
+          <td class="count-num"><strong>~129</strong></td>
+          <td>Grows as content is added</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DESIGN SYSTEM -->
+  <p class="section-label">07 — Design System</p>
+  <h2 class="section-title">Visual Design Language</h2>
+  <div class="design-row">
+    <div class="design-card">
+      <h4>Color Palette</h4>
+      <div class="color-swatch">
+        <div class="swatch" style="background:#1A3A5C;"></div>
+        <div class="swatch-info"><div class="name">Deep Sky Blue</div><div class="hex">#1A3A5C — Primary / Headers</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch" style="background:#F4A623;"></div>
+        <div class="swatch-info"><div class="name">Warm Gold</div><div class="hex">#F4A623 — Accents / CTA</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch" style="background:#3DAA74;"></div>
+        <div class="swatch-info"><div class="name">Savanna Green</div><div class="hex">#3DAA74 — Success / Progress</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch" style="background:#C4622D;"></div>
+        <div class="swatch-info"><div class="name">Clay Red</div><div class="hex">#C4622D — Warnings / Errors</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch" style="background:#FDF6E3;"></div>
+        <div class="swatch-info"><div class="name">Warm Cream</div><div class="hex">#FDF6E3 — Background</div></div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch" style="background:#1C1C1E;"></div>
+        <div class="swatch-info"><div class="name">Ink Black</div><div class="hex">#1C1C1E — Body text</div></div>
+      </div>
+    </div>
+    <div class="design-card">
+      <h4>Typography Scale</h4>
+      <div class="typo-item">
+        <div class="typo-sample" style="font-size:22px; font-weight:800; color:#1A3A5C;">Display Heading</div>
+        <div class="typo-spec">Sora Bold 22sp — Screen titles</div>
+      </div>
+      <div class="typo-item">
+        <div class="typo-sample" style="font-size:18px; font-weight:700;">Section Title</div>
+        <div class="typo-spec">Sora SemiBold 18sp — Card headers</div>
+      </div>
+      <div class="typo-item">
+        <div class="typo-sample" style="font-size:15px;">Body Reading Text</div>
+        <div class="typo-spec">Lora Regular 15sp — Lesson content</div>
+      </div>
+      <div class="typo-item">
+        <div class="typo-sample" style="font-size:13px; color:#6B6B6B;">Supporting Label</div>
+        <div class="typo-spec">Sora Regular 13sp — Metadata</div>
+      </div>
+      <div class="typo-item">
+        <div class="typo-sample" style="font-size:11px; font-family:'JetBrains Mono', monospace; color:#C4622D;">CODE / MONO</div>
+        <div class="typo-spec">Mono 11sp — Tags, codes, IDs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <p class="section-label">08 — Additional Recommendations</p>
+  <h2 class="section-title">Critical Additions to Plan</h2>
+  <div class="recs-grid">
+    <div class="rec-card">
+      <div class="rec-icon">📄</div>
+      <div class="rec-title">Content Format: Custom JSON → Compose</div>
+      <div class="rec-desc">Since no WebView is used, lessons must be stored as structured JSON (paragraphs, images, tables, code blocks) and rendered using Compose's custom <code>ContentBlock</code> composable. Java's <code>ContentParser.java</code> converts raw files into typed Kotlin sealed classes.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon">🔒</div>
+      <div class="rec-title">Backup Encryption via C++</div>
+      <div class="rec-desc">All backup files encrypted using AES-256-GCM implemented in C++ via NDK. Java JNI bridge exposes <code>encrypt(byte[])</code> and <code>decrypt(byte[])</code> to Kotlin. Keys derived from device ID using PBKDF2.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon">📊</div>
+      <div class="rec-title">Hilt for Dependency Injection</div>
+      <div class="rec-desc">Use Hilt (not manual DI) to inject ViewModels, Repositories, and UseCases cleanly. Enables easy testing and separation of concerns across the entire app without boilerplate.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon">⏱️</div>
+      <div class="rec-title">WorkManager for Auto-Backup</div>
+      <div class="rec-desc"><code>AutoBackupWorker</code> runs every 3 days via WorkManager's PeriodicWorkRequest. Keeps last 3 backups, deletes oldest automatically. Runs only when device is idle and not low on storage.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon">🧪</div>
+      <div class="rec-title">Testing Files (Recommended)</div>
+      <div class="rec-desc">Add unit tests for UseCases and Repositories, UI tests for critical screens (Lesson, Quiz). Adds ~20 test files. Use JUnit5, MockK, Compose Test, and Turbine for Flow testing.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon">🖨️</div>
+      <div class="rec-title">PDF Rendering (No WebView)</div>
+      <div class="rec-desc">Past papers rendered using Android's built-in <code>PdfRenderer</code> API wrapped in Java helper class. Renders pages as Bitmaps displayed in Compose's <code>Image</code> composable with pinch-zoom support.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon">🌐</div>
+      <div class="rec-title">Luganda Localization Strategy</div>
+      <div class="rec-desc">All UI strings in <code>strings.xml</code> and <code>values-lg/strings.xml</code>. Lesson content itself available in both languages as separate content files. Language switch is live (no restart) via DataStore + <code>CompositionLocalProvider</code>.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-icon">📱</div>
+      <div class="rec-title">Low-End Device Optimizations</div>
+      <div class="rec-desc">Target 1GB RAM: lazy Compose lists, image downsampling via Coil with memory caps, ProGuard enabled, APK split by ABI (arm64 vs x86), no unnecessary animations, Room queries on IO dispatcher only.</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <p class="section-label">09 — Development Phases</p>
+  <h2 class="section-title">4-Phase Roadmap</h2>
+  <div class="timeline">
+    <div class="phase phase-1">
+      <div class="phase-header">
+        <span class="phase-label">PHASE 1</span>
+        <span class="phase-title">Core Prototype — P5 Mathematics</span>
+      </div>
+      <ul class="phase-items">
+        <li>Project setup: Kotlin + Compose + Hilt + Room + C++ NDK</li>
+        <li>AppDatabase with all 8 tables, seed data loader</li>
+        <li>Home, Subject, Lesson, Exercise, Quiz screens</li>
+        <li>ContentParser (Java) + ContentBlock composable</li>
+        <li>Progress tracking (ProgressDao + ProgressViewModel)</li>
+        <li>5–10 P5 Math lessons with exercises and a quiz</li>
+        <li>Basic navigation graph and bottom nav bar</li>
+      </ul>
+    </div>
+    <div class="phase phase-2">
+      <div class="phase-header">
+        <span class="phase-label">PHASE 2</span>
+        <span class="phase-title">Content Expansion + Past Papers</span>
+      </div>
+      <ul class="phase-items">
+        <li>Add all P1–S6 subjects and content structure</li>
+        <li>Past Papers screen with PdfRenderer (Java helper)</li>
+        <li>Bookmarks and Notes screens</li>
+        <li>Quiz Result screen with breakdown analysis</li>
+        <li>WebView screen (remoteschools.co.ug only)</li>
+        <li>GetWeakTopicsUseCase + Progress Reports screen</li>
+      </ul>
+    </div>
+    <div class="phase phase-3">
+      <div class="phase-header">
+        <span class="phase-label">PHASE 3</span>
+        <span class="phase-title">Polish + Backup + Localization</span>
+      </div>
+      <ul class="phase-items">
+        <li>C++ AES-GCM encryption module (encryption.cpp)</li>
+        <li>BackupRepository + AutoBackupWorker</li>
+        <li>Settings screen: backup, restore, language toggle</li>
+        <li>Luganda translations (values-lg/strings.xml)</li>
+        <li>Onboarding / Splash screens</li>
+        <li>Full UI design polish: typography, spacing, animations</li>
+        <li>Accessibility: content descriptions, font scaling</li>
+      </ul>
+    </div>
+    <div class="phase phase-4">
+      <div class="phase-header">
+        <span class="phase-label">PHASE 4</span>
+        <span class="phase-title">Optimization + Launch Prep</span>
+      </div>
+      <ul class="phase-items">
+        <li>C++ compression module (zlib via NDK)</li>
+        <li>ProGuard + APK size optimization</li>
+        <li>Low-end device testing (1GB RAM emulator)</li>
+        <li>Unit tests for UseCases + Repository</li>
+        <li>Compose UI tests for Lesson + Quiz screens</li>
+        <li>Final content QA: curriculum accuracy check</li>
+        <li>Play Store listing preparation</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <strong>RemoteSchools Uganda</strong> · Android App Blueprint · Kotlin + Java + C++ · Fully Offline · MVVM + Clean Architecture<br>
+  <span style="opacity:0.5; margin-top:6px; display:block;">12 Screens · ~129 Files · 8 DB Tables · 4 Dev Phases</span>
+</div>
+
+</body>
+</html>

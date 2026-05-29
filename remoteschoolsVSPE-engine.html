@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtuWorld - Virtual 2D Open World</title>
+    <style>
+        :root {
+            --bg: #1a1d27;
+            --surface: #242836;
+            --surface-light: #2c3142;
+            --card: #2e3348;
+            --text: #e4e6f0;
+            --text-secondary: #a0a5bc;
+            --text-muted: #6b7089;
+            --accent: #5b9bd5;
+            --accent-glow: #7ab8f5;
+            --teal: #4ecdc4;
+            --warm: #f0a860;
+            --rose: #e87d7d;
+            --green: #6bbe7a;
+            --purple: #9b7ed8;
+            --gold: #e2c044;
+            --border: #363b4d;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.35);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+            --radius-sm: 10px;
+            --radius: 16px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+            --font: 'Segoe UI', 'SF Pro Display', system-ui, -apple-system, sans-serif;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: var(--font);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            cursor: default;
+            color: var(--text);
+        }
+
+        /* WORLD VIEWPORT */
+        #viewport {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, #1e2232 0%, #14171f 100%);
+        }
+
+        #world-container {
+            position: absolute;
+            width: 4200px;
+            height: 4200px;
+            transform-origin: 0 0;
+            transition: none;
+            will-change: transform;
+        }
+
+        /* TERRAIN REGIONS */
+        .terrain {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(30px);
+            opacity: 0.55;
+            pointer-events: none;
+        }
+        .terrain-home {
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, #3a5540 0%, #263828 40%, transparent 70%);
+            left: 1650px;
+            top: 1650px;
+        }
+        .terrain-lab {
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, #3a4a60 0%, #1e2b3d 40%, transparent 70%);
+            left: 1400px;
+            top: 600px;
+        }
+        .terrain-forest {
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, #2d4a30 0%, #1a2e1c 40%, transparent 70%);
+            left: 2400px;
+            top: 1400px;
+        }
+        .terrain-space {
+            width: 650px;
+            height: 650px;
+            background: radial-gradient(circle, #2a2548 0%, #15102e 40%, transparent 70%);
+            left: 2200px;
+            top: 450px;
+        }
+        .terrain-ocean {
+            width: 750px;
+            height: 750px;
+            background: radial-gradient(circle, #1e4058 0%, #0f2433 40%, transparent 70%);
+            left: 1400px;
+            top: 2600px;
+        }
+        .terrain-workshop {
+            width: 650px;
+            height: 650px;
+            background: radial-gradient(circle, #4a3a2a 0%, #2e2216 40%, transparent 70%);
+            left: 500px;
+            top: 1400px;
+        }
+        .terrain-desert {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #5a4a30 0%, #3a2a18 40%, transparent 70%);
+            left: 450px;
+            top: 2300px;
+        }
+        .terrain-mountain {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #3d4050 0%, #222433 40%, transparent 70%);
+            left: 550px;
+            top: 550px;
+        }
+
+        /* ROADS */
+        .road {
+            position: absolute;
+            pointer-events: none;
+            background: #3a3d28;
+            border-radius: 999px;
+            opacity: 0.5;
+            z-index: 1;
+        }
+        .road-horizontal {
+            height: 28px;
+            border-radius: 14px;
+        }
+        .road-vertical {
+            width: 28px;
+            border-radius: 14px;
+        }
+        .road-dot {
+            position: absolute;
+            pointer-events: none;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #5a5d3a;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        /* BUILDINGS / PORTALS */
+        .portal {
+            position: absolute;
+            z-index: 10;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: transform var(--transition), filter var(--transition);
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.5));
+        }
+        .portal:hover {
+            transform: translateY(-6px) scale(1.06);
+            filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.7)) brightness(1.15);
+            z-index: 50;
+        }
+        .portal:active {
+            transform: scale(0.95);
+            transition: 0.1s;
+        }
+        .portal-icon-wrap {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: visible;
+            transition: all var(--transition);
+        }
+        .portal:hover .portal-icon-wrap {
+            box-shadow: var(--shadow-lg), 0 0 40px rgba(91, 155, 213, 0.25);
+            border-color: #5b9bd560;
+        }
+        .portal-glow {
+            position: absolute;
+            inset: -6px;
+            border-radius: 26px;
+            opacity: 0;
+            transition: opacity var(--transition);
+            pointer-events: none;
+            background: transparent;
+            box-shadow: 0 0 30px 8px rgba(91, 155, 213, 0.3);
+        }
+        .portal:hover .portal-glow {
+            opacity: 1;
+        }
+        .portal-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            color: var(--text);
+            background: var(--surface);
+            padding: 5px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+        }
+        .portal:hover .portal-label {
+            background: var(--surface-light);
+            color: #fff;
+            border-color: #5b9bd580;
+        }
+        .portal svg {
+            width: 38px;
+            height: 38px;
+            transition: transform var(--transition);
+            z-index: 2;
+            position: relative;
+        }
+        .portal:hover svg {
+            transform: scale(1.1);
+        }
+
+        /* PLAYER */
+        #player {
+            position: absolute;
+            z-index: 100;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 20px 6px rgba(91, 155, 213, 0.6), 0 0 50px 12px rgba(91, 155, 213, 0.25),
+                0 4px 12px rgba(0, 0, 0, 0.5);
+            transition: left 0.08s linear, top 0.08s linear;
+            pointer-events: none;
+        }
+        #player::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            animation: player-pulse 1.8s ease-in-out infinite;
+        }
+        @keyframes player-pulse {
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.7);
+                opacity: 0;
+            }
+        }
+
+        /* HUD */
+        #hud {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 8px 18px;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        #hud .key-hint {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        .key-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        #current-area {
+            font-weight: 600;
+            color: var(--accent-glow);
+            font-size: 0.78rem;
+            letter-spacing: 0.03em;
+        }
+        #enter-prompt {
+            display: none;
+            animation: fade-in-up 0.3s ease;
+            color: var(--warm);
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.04em;
+        }
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* MINIMAP */
+        #minimap {
+            position: fixed;
+            bottom: 110px;
+            right: 20px;
+            z-index: 200;
+            width: 130px;
+            height: 130px;
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            opacity: 0.85;
+        }
+        #minimap-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* TOP BAR */
+        #top-bar {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 8px 18px;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        #top-bar .logo-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        #top-bar .title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.04em;
+            color: var(--text);
+        }
+        #top-bar .subtitle {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            letter-spacing: 0.03em;
+        }
+
+        /* SIMULATION OVERLAY */
+        #sim-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(10, 12, 18, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fade-in 0.3s ease;
+        }
+        #sim-overlay.active {
+            display: flex;
+        }
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        #sim-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 32px 28px;
+            max-width: 700px;
+            width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            animation: slide-up 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        @keyframes slide-up {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        #sim-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            z-index: 10;
+        }
+        #sim-close:hover {
+            background: #e87d7d30;
+            border-color: var(--rose);
+            color: var(--rose);
+            box-shadow: 0 0 20px rgba(232, 125, 125, 0.3);
+        }
+        #sim-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #sim-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            letter-spacing: 0.03em;
+        }
+        #sim-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+        .sim-item {
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            min-width: 120px;
+            flex: 1 1 140px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+        .sim-item:hover {
+            border-color: #5b9bd560;
+            box-shadow: var(--shadow-md), 0 0 24px rgba(91, 155, 213, 0.2);
+            transform: translateY(-3px);
+        }
+        .sim-item:active {
+            transform: scale(0.96);
+            transition: 0.1s;
+        }
+        .sim-item svg {
+            width: 44px;
+            height: 44px;
+            transition: transform var(--transition);
+        }
+        .sim-item:hover svg {
+            transform: scale(1.12);
+        }
+        .sim-item .item-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            color: var(--text);
+        }
+        .sim-item .item-desc {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
+        }
+
+        /* TOOLTIP */
+        #tooltip {
+            position: fixed;
+            pointer-events: none;
+            z-index: 600;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 14px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            color: var(--text);
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+        }
+        #tooltip.visible {
+            opacity: 1;
+        }
+
+        /* PARTICLES */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: 2;
+            animation: float-up linear forwards;
+        }
+        @keyframes float-up {
+            0% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-120px) translateX(var(--drift)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* SCROLLBAR */
+        #sim-card::-webkit-scrollbar {
+            width: 5px;
+        }
+        #sim-card::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 10px;
+        }
+        #sim-card::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .portal-icon-wrap {
+                width: 50px;
+                height: 50px;
+                border-radius: 14px;
+            }
+            .portal svg {
+                width: 26px;
+                height: 26px;
+            }
+            .portal-label {
+                font-size: 0.6rem;
+                padding: 3px 10px;
+            }
+            #hud {
+                padding: 6px 12px;
+                gap: 8px;
+                bottom: 12px;
+            }
+            #hud .key-hint {
+                font-size: 0.6rem;
+            }
+            #minimap {
+                width: 80px;
+                height: 80px;
+                bottom: 80px;
+                right: 8px;
+            }
+            #top-bar {
+                padding: 6px 12px;
+                top: 8px;
+            }
+            #top-bar .title {
+                font-size: 0.7rem;
+            }
+            #sim-card {
+                padding: 20px 14px;
+                max-height: 85vh;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- VIEWPORT -->
+    <div id="viewport">
+        <div id="world-container">
+            <!-- Terrain regions -->
+            <div class="terrain terrain-home"></div>
+            <div class="terrain terrain-lab"></div>
+            <div class="terrain terrain-forest"></div>
+            <div class="terrain terrain-space"></div>
+            <div class="terrain terrain-ocean"></div>
+            <div class="terrain terrain-workshop"></div>
+            <div class="terrain terrain-desert"></div>
+            <div class="terrain terrain-mountain"></div>
+
+            <!-- Roads (decorative dots along paths) -->
+            <div id="roads-container"></div>
+
+            <!-- Portals / Buildings -->
+            <!-- Home -->
+            <div class="portal" data-area="home" style="left:1860px;top:1830px;" id="portal-home">
+                <div class="portal-icon-wrap" style="background:#2e3540;border-color:#5b9bd570;">
+                    <div class="portal-glow" style="box-shadow:0 0 35px 10px rgba(91,155,213,0.4);"></div>
+                    <svg viewBox="0 0 48 48" fill="none"><rect x="6" y="20" width="36" height="22" rx="4" stroke="#5b9bd5" stroke-width="2.5" fill="none"/><path d="M18 42V28h12v14" stroke="#5b9bd5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20l14-14 14 14" stroke="#5b9bd5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="32" r="3" fill="#5b9bd5"/></svg>
+                </div>
+                <span class="portal-label">🏠 Home Base</span>
+            </div>
+
+            <!-- Lab -->
+            <div class="portal" data-area="lab" style="left:1570px;top:720px;" id="portal-lab">
+                <div class="portal-icon-wrap">
+                    <div class="portal-glow"></div>
+                    <svg viewBox="0 0 48 48" fill="none"><rect x="12" y="10" width="8" height="28" rx="3" stroke="#4ecdc4" stroke-width="2.5" fill="none"/><rect x="22" y="6" width="10" height="32" rx="3" stroke="#4ecdc4" stroke-width="2.5" fill="none"/><circle cx="27" cy="18" r="2" fill="#4ecdc4"/><line x1="16" y1="16" x2="16" y2="24" stroke="#4ecdc4" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <span class="portal-label">🔬 Science Lab</span>
+            </div>
+
+            <!-- Forest -->
+            <div class="portal" data-area="forest" style="left:2650px;top:1600px;" id="portal-forest">
+                <div class="portal-icon-wrap">
+                    <div class="portal-glow"></div>
+                    <svg viewBox="0 0 48 48" fill="none"><circle cx="16" cy="34" r="8" stroke="#6bbe7a" stroke-width="2.5" fill="none"/><circle cx="30" cy="30" r="10" stroke="#6bbe7a" stroke-width="2.5" fill="none"/><circle cx="22" cy="20" r="9" stroke="#6bbe7a" stroke-width="2.5" fill="none"/><rect x="21" y="36" width="4" height="8" rx="2" fill="#6bbe7a"/></svg>
+                </div>
+                <span class="portal-label">🌲 Forest</span>
+            </div>
+
+            <!-- Space Center -->
+            <div class="portal" data-area="space" style="left:2370px;top:520px;" id="portal-space">
+                <div class="portal-icon-wrap">
+                    <div class="portal-glow"></div>
+                    <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="18" stroke="#9b7ed8" stroke-width="2.5" fill="none"/><circle cx="24" cy="24" r="8" stroke="#9b7ed8" stroke-width="1.8" fill="none" stroke-dasharray="8 4"/><circle cx="18" cy="20" r="3" fill="#9b7ed8"/><circle cx="32" cy="28" r="2" fill="#9b7ed8"/><path d="M38 10l-8 8" stroke="#e2c044" stroke-width="2.5" stroke-linecap="round"/></svg>
+                </div>
+                <span class="portal-label">🚀 Space Center</span>
+            </div>
+
+            <!-- Ocean -->
+            <div class="portal" data-area="ocean" style="left:1620px;top:2800px;" id="portal-ocean">
+                <div class="portal-icon-wrap">
+                    <div class="portal-glow"></div>
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M4 28c6-4 12-4 18 0s12 4 18 0" stroke="#5b9bd5" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M8 34c5-4 10-4 16 0s12 4 16 0" stroke="#5b9bd5" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M20 16c-2 2-4 3-6 2" stroke="#5b9bd5" stroke-width="2" stroke-linecap="round"/><circle cx="27" cy="18" r="2" fill="#5b9bd5"/></svg>
+                </div>
+                <span class="portal-label">🌊 Ocean Lab</span>
+            </div>
+
+            <!-- Workshop -->
+            <div class="portal" data-area="workshop" style="left:620px;top:1580px;" id="portal-workshop">
+                <div class="portal-icon-wrap">
+                    <div class="portal-glow"></div>
+                    <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" stroke="#f0a860" stroke-width="2.5" fill="none"/><circle cx="24" cy="24" r="6" stroke="#f0a860" stroke-width="2" fill="none"/><rect x="22" y="6" width="4" height="12" rx="2" fill="#f0a860"/><rect x="22" y="30" width="4" height="12" rx="2" fill="#f0a860"/><rect x="6" y="22" width="12" height="4" rx="2" fill="#f0a860"/><rect x="30" y="22" width="12" height="4" rx="2" fill="#f0a860"/></svg>
+                </div>
+                <span class="portal-label">⚙️ Workshop</span>
+            </div>
+
+            <!-- Desert -->
+            <div class="portal" data-area="desert" style="left:580px;top:2480px;" id="portal-desert">
+                <div class="portal-icon-wrap">
+                    <div class="portal-glow"></div>
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M8 36l16-24 8 12 8-10" stroke="#e2c044" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="24" cy="12" r="4" fill="#e2c044"/><circle cx="36" cy="26" r="3" fill="#f0a860"/></svg>
+                </div>
+                <span class="portal-label">🏜️ Desert Station</span>
+            </div>
+
+            <!-- Mountain -->
+            <div class="portal" data-area="mountain" style="left:700px;top:640px;" id="portal-mountain">
+                <div class="portal-icon-wrap">
+                    <div class="portal-glow"></div>
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M6 38L18 16l10 16 8-10 8 16" stroke="#a0a5bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="18" cy="16" r="3" fill="#e8e8f0"/><circle cx="36" cy="22" r="2" fill="#e8e8f0"/></svg>
+                </div>
+                <span class="portal-label">⛰️ Mountain Lab</span>
+            </div>
+
+            <!-- Player -->
+            <div id="player" style="left:1880px;top:1860px;"></div>
+        </div>
+    </div>
+
+    <!-- MINIMAP -->
+    <div id="minimap">
+        <canvas id="minimap-canvas" width="130" height="130"></canvas>
+    </div>
+
+    <!-- TOP BAR -->
+    <div id="top-bar">
+        <div class="logo-dot"></div>
+        <span class="title">VirtuWorld</span>
+        <span class="subtitle">2D Open World</span>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud">
+        <div class="key-hint"><span class="key-icon">W</span><span class="key-icon">A</span><span class="key-icon">S</span><span class="key-icon">D</span> Move</div>
+        <span style="color:var(--text-muted);font-size:0.7rem;">|</span>
+        <span id="current-area">Home Base</span>
+        <span style="color:var(--text-muted);font-size:0.7rem;">|</span>
+        <span id="enter-prompt">Press <span class="key-icon" style="display:inline-flex;margin:0 3px;">E</span> to Enter</span>
+        <div class="key-hint" style="margin-left:4px;"><span class="key-icon">🖱</span> Click to move</div>
+    </div>
+
+    <!-- TOOLTIP -->
+    <div id="tooltip"></div>
+
+    <!-- SIMULATION OVERLAY -->
+    <div id="sim-overlay">
+        <div id="sim-card">
+            <button id="sim-close" title="Close (Esc)">✕</button>
+            <div id="sim-title"></div>
+            <div id="sim-subtitle"></div>
+            <div id="sim-content"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // DOM elements
+            const viewport = document.getElementById('viewport');
+            const worldContainer = document.getElementById('world-container');
+            const player = document.getElementById('player');
+            const currentAreaEl = document.getElementById('current-area');
+            const enterPrompt = document.getElementById('enter-prompt');
+            const simOverlay = document.getElementById('sim-overlay');
+            const simCard = document.getElementById('sim-card');
+            const simTitle = document.getElementById('sim-title');
+            const simSubtitle = document.getElementById('sim-subtitle');
+            const simContent = document.getElementById('sim-content');
+            const simClose = document.getElementById('sim-close');
+            const tooltip = document.getElementById('tooltip');
+            const minimapCanvas = document.getElementById('minimap-canvas');
+            const minimapCtx = minimapCanvas.getContext('2d');
+
+            // World constants
+            const WORLD_W = 4200;
+            const WORLD_H = 4200;
+            const PLAYER_SPEED = 5;
+            const NEAR_THRESHOLD = 120;
+
+            // Player position (center of world, at Home)
+            let playerX = 1894;
+            let playerY = 1890;
+            let targetX = playerX;
+            let targetY = playerY;
+            let isMovingToTarget = false;
+
+            // Camera
+            let cameraX = 0;
+            let cameraY = 0;
+
+            // Input state
+            const keys = {};
+            let mouseWorldX = 0;
+            let mouseWorldY = 0;
+
+            // Portals data
+            const portals = [{
+                id: 'home',
+                x: 1900,
+                y: 1870,
+                area: 'home',
+                label: 'Home Base',
+                icon: '🏠',
+                color: '#5b9bd5',
+                description: 'Welcome to VirtuWorld! This is your central hub.'
+            }, {
+                id: 'lab',
+                x: 1610,
+                y: 760,
+                area: 'lab',
+                label: 'Science Lab',
+                icon: '🔬',
+                color: '#4ecdc4',
+                description: 'Chemistry & Physics experiments'
+            }, {
+                id: 'forest',
+                x: 2690,
+                y: 1640,
+                area: 'forest',
+                label: 'Forest',
+                icon: '🌲',
+                color: '#6bbe7a',
+                description: 'Ecosystem & Biology studies'
+            }, {
+                id: 'space',
+                x: 2410,
+                y: 560,
+                area: 'space',
+                label: 'Space Center',
+                icon: '🚀',
+                color: '#9b7ed8',
+                description: 'Astronomy & Space Physics'
+            }, {
+                id: 'ocean',
+                x: 1660,
+                y: 2840,
+                area: 'ocean',
+                label: 'Ocean Lab',
+                icon: '🌊',
+                color: '#5b9bd5',
+                description: 'Marine Biology & Oceanography'
+            }, {
+                id: 'workshop',
+                x: 660,
+                y: 1620,
+                area: 'workshop',
+                label: 'Workshop',
+                icon: '⚙️',
+                color: '#f0a860',
+                description: 'Machines & Mechanical Engineering'
+            }, {
+                id: 'desert',
+                x: 620,
+                y: 2520,
+                area: 'desert',
+                label: 'Desert Station',
+                icon: '🏜️',
+                color: '#e2c044',
+                description: 'Geology & Earth Sciences'
+            }, {
+                id: 'mountain',
+                x: 740,
+                y: 680,
+                area: 'mountain',
+                label: 'Mountain Lab',
+                icon: '⛰️',
+                color: '#a0a5bc',
+                description: 'Earth Science & Altitude Studies'
+            }];
+
+            let nearestPortal = null;
+            let currentArea = 'home';
+
+            // Generate road dots
+            function generateRoads() {
+                const roadsContainer = document.getElementById('roads-container');
+                const homeX = 1900;
+                const homeY = 1870;
+                portals.forEach(p => {
+                    if (p.area === 'home') return;
+                    const dx = p.x - homeX;
+                    const dy = p.y - homeY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const steps = Math.floor(dist / 22);
+                    for (let i = 1; i < steps; i++) {
+                        const t = i / steps;
+                        const dot = document.createElement('div');
+                        dot.className = 'road-dot';
+                        dot.style.left = (homeX + dx * t - 3) + 'px';
+                        dot.style.top = (homeY + dy * t - 3) + 'px';
+                        roadsContainer.appendChild(dot);
+                    }
+                });
+            }
+            generateRoads();
+
+            // Spawn ambient particles
+            function spawnParticles() {
+                const container = document.getElementById('world-container');
+                setInterval(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    const size = 2 + Math.random() * 4;
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    particle.style.left = (playerX + (Math.random() - 0.5) * 600) + 'px';
+                    particle.style.top = (playerY + (Math.random() - 0.5) * 600) + 'px';
+                    particle.style.background =
+                        `hsl(${180 + Math.random() * 60}, 50%, ${60 + Math.random() * 30}%)`;
+                    particle.style.setProperty('--drift', (Math.random() - 0.5) * 80 + 'px');
+                    particle.style.animationDuration = (2 + Math.random() * 4) + 's';
+                    container.appendChild(particle);
+                    setTimeout(() => particle.remove(), 5000);
+                }, 400);
+            }
+            spawnParticles();
+
+            // Update camera to follow player
+            function updateCamera() {
+                const vw = viewport.clientWidth;
+                const vh = viewport.clientHeight;
+                cameraX = playerX - vw / 2;
+                cameraY = playerY - vh / 2;
+                // Clamp
+                cameraX = Math.max(0, Math.min(WORLD_W - vw, cameraX));
+                cameraY = Math.max(0, Math.min(WORLD_H - vh, cameraY));
+                worldContainer.style.transform = `translate(${-cameraX}px, ${-cameraY}px)`;
+            }
+
+            // Update player visual position
+            function updatePlayerVisual() {
+                player.style.left = playerX + 'px';
+                player.style.top = playerY + 'px';
+            }
+
+            // Check nearest portal
+            function updateNearestPortal() {
+                let minDist = Infinity;
+                nearestPortal = null;
+                portals.forEach(p => {
+                    const dx = playerX - p.x;
+                    const dy = playerY - p.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearestPortal = p;
+                    }
+                });
+                if (nearestPortal && minDist < NEAR_THRESHOLD) {
+                    currentArea = nearestPortal.area;
+                    currentAreaEl.textContent = nearestPortal.icon + ' ' + nearestPortal.label;
+                    enterPrompt.style.display = 'inline';
+                } else {
+                    currentArea = 'world';
+                    currentAreaEl.textContent = '🌍 Open World';
+                    enterPrompt.style.display = 'none';
+                }
+            }
+
+            // Move player toward target
+            function moveToTarget() {
+                if (!isMovingToTarget) return;
+                const dx = targetX - playerX;
+                const dy = targetY - playerY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 3) {
+                    playerX = targetX;
+                    playerY = targetY;
+                    isMovingToTarget = false;
+                    updatePlayerVisual();
+                    updateCamera();
+                    updateNearestPortal();
+                    updateMinimap();
+                    return;
+                }
+                const speed = Math.min(PLAYER_SPEED + 3, dist * 0.3);
+                const nx = dx / dist;
+                const ny = dy / dist;
+                playerX += nx * speed;
+                playerY += ny * speed;
+                // Clamp
+                playerX = Math.max(14, Math.min(WORLD_W - 14, playerX));
+                playerY = Math.max(14, Math.min(WORLD_H - 14, playerY));
+                updatePlayerVisual();
+                updateCamera();
+                updateNearestPortal();
+                updateMinimap();
+                if (dist < 4) {
+                    playerX = targetX;
+                    playerY = targetY;
+                    isMovingToTarget = false;
+                }
+            }
+
+            // Keyboard movement
+            function handleKeyboardMovement() {
+                let mx = 0,
+                    my = 0;
+                if (keys['KeyW'] || keys['ArrowUp']) my -= 1;
+                if (keys['KeyS'] || keys['ArrowDown']) my += 1;
+                if (keys['KeyA'] || keys['ArrowLeft']) mx -= 1;
+                if (keys['KeyD'] || keys['ArrowRight']) mx += 1;
+
+                if (mx !== 0 || my !== 0) {
+                    isMovingToTarget = false;
+                    const mag = Math.sqrt(mx * mx + my * my);
+                    mx /= mag;
+                    my /= mag;
+                    playerX += mx * PLAYER_SPEED;
+                    playerY += my * PLAYER_SPEED;
+                    playerX = Math.max(14, Math.min(WORLD_W - 14, playerX));
+                    playerY = Math.max(14, Math.min(WORLD_H - 14, playerY));
+                    updatePlayerVisual();
+                    updateCamera();
+                    updateNearestPortal();
+                    updateMinimap();
+                }
+            }
+
+            // Enter simulation
+            function enterSimulation(portal) {
+                simOverlay.classList.add('active');
+                simTitle.innerHTML = portal.icon + ' ' + portal.label;
+                simSubtitle.textContent = portal.description;
+                simContent.innerHTML = '';
+                const items = getSimulationItems(portal.area);
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'sim-item';
+                    div.innerHTML = item.svg + `
+                <span class="item-label">${item.name}</span>
+                <span class="item-desc">${item.desc}</span>
+              `;
+                    div.addEventListener('click', () => {
+                        if (item.action) item.action();
+                        else showTooltipEvent(div, `${item.name}: ${item.desc}`);
+                    });
+                    div.addEventListener('mouseenter', (e) => {
+                        tooltip.textContent = item.desc;
+                        tooltip.classList.add('visible');
+                        tooltip.style.left = e.clientX + 16 + 'px';
+                        tooltip.style.top = e.clientY - 40 + 'px';
+                    });
+                    div.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+                    div.addEventListener('mousemove', (e) => {
+                        tooltip.style.left = e.clientX + 16 + 'px';
+                        tooltip.style.top = e.clientY - 40 + 'px';
+                    });
+                    simContent.appendChild(div);
+                });
+            }
+
+            function closeSimulation() {
+                simOverlay.classList.remove('active');
+                simContent.innerHTML = '';
+            }
+
+            // Simulation items
+            function getSimulationItems(area) {
+                const svgBeaker =
+                    '<svg viewBox="0 0 48 48" fill="none"><rect x="14" y="10" width="8" height="28" rx="3" stroke="#4ecdc4" stroke-width="2.5" fill="none"/><circle cx="18" cy="20" r="4" fill="#4ecdc4" opacity="0.6"/><line x1="18" y1="16" x2="18" y2="28" stroke="#4ecdc4" stroke-width="1.5"/></svg>';
+                const svgMicroscope =
+                    '<svg viewBox="0 0 48 48" fill="none"><rect x="16" y="8" width="6" height="28" rx="3" stroke="#5b9bd5" stroke-width="2.5" fill="none"/><circle cx="19" cy="18" r="6" stroke="#5b9bd5" stroke-width="2" fill="none"/><circle cx="19" cy="18" r="2" fill="#5b9bd5"/><rect x="8" y="34" width="22" height="4" rx="2" fill="#5b9bd5"/></svg>';
+                const svgTree =
+                    '<svg viewBox="0 0 48 48" fill="none"><circle cx="20" cy="28" r="12" stroke="#6bbe7a" stroke-width="2.5" fill="none"/><circle cx="20" cy="20" r="8" stroke="#6bbe7a" stroke-width="2.2" fill="none"/><rect x="18" y="36" width="4" height="8" rx="2" fill="#8B6914"/></svg>';
+                const svgRocket =
+                    '<svg viewBox="0 0 48 48" fill="none"><path d="M24 4l-12 20h8v18l4 2 4-2V24h8L24 4z" stroke="#e87d7d" stroke-width="2.5" fill="none" stroke-linejoin="round"/><circle cx="24" cy="18" r="3" fill="#e2c044"/></svg>';
+                const svgGear =
+                    '<svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="14" stroke="#f0a860" stroke-width="2.5" fill="none"/><circle cx="24" cy="24" r="5" stroke="#f0a860" stroke-width="2" fill="none"/><rect x="22" y="4" width="4" height="14" rx="2" fill="#f0a860"/></svg>';
+                const svgFish =
+                    '<svg viewBox="0 0 48 48" fill="none"><ellipse cx="22" cy="24" rx="16" ry="10" stroke="#5b9bd5" stroke-width="2.5" fill="none"/><polygon points="38,24 46,16 46,32" fill="#5b9bd5"/><circle cx="14" cy="22" r="3" fill="#fff"/></svg>';
+                const svgCrystal =
+                    '<svg viewBox="0 0 48 48" fill="none"><polygon points="24,4 38,18 28,36 20,36 10,18" stroke="#e2c044" stroke-width="2.5" fill="none" stroke-linejoin="round"/><line x1="24" y1="4" x2="24" y2="36" stroke="#e2c044" stroke-width="1.5" opacity="0.5"/></svg>';
+                const svgMountainIcon =
+                    '<svg viewBox="0 0 48 48" fill="none"><path d="M4 38L16 14l8 18 8-12 10 18" stroke="#a0a5bc" stroke-width="2.5" stroke-linejoin="round" fill="none"/></svg>';
+
+                const areaItems = {
+                    home: [
+                        { name: 'Info Hub', desc: 'Learn about VirtuWorld', svg: svgBeaker,
+                            action: () => alert('Welcome to VirtuWorld!\n\nExplore the 2D open world. Visit different branches to simulate practicals. Use WASD or click to move. Press E near buildings to enter.') },
+                        { name: 'Quick Travel', desc: 'Jump to any branch',
+                            svg: svgRocket, action: () => { closeSimulation();
+                                playerX = 1610;
+                                playerY = 760;
+                                updatePlayerVisual();
+                                updateCamera();
+                                updateNearestPortal();
+                                updateMinimap(); } },
+                        { name: 'Map Guide', desc: 'View all locations', svg: svgMicroscope, action: () => {
+                                const locs = portals.map(p => p.icon + ' ' + p.label + ': ' + p
+                                    .description).join('\n');
+                                alert('📍 Locations:\n\n' + locs);
+                            } },
+                    ],
+                    lab: [
+                        { name: 'Beaker Experiment', desc: 'Mix virtual chemicals',
+                            svg: svgBeaker, action: () => alert(
+                                '🧪 Virtual Chemistry\n\nSelect compounds and observe simulated reactions. Safety first - always wear virtual goggles!') },
+                        { name: 'Microscope View', desc: 'Examine virtual slides',
+                            svg: svgMicroscope, action: () => alert(
+                                '🔬 Digital Microscope\n\nView prepared slides of plant cells, bacteria, and mineral samples at various magnifications.') },
+                        { name: 'Physics Pendulum', desc: 'Swing & measure periods',
+                            svg: svgGear, action: () => alert(
+                                '⏱️ Pendulum Simulator\n\nAdjust length and mass. Observe how period changes. Plot real-time graphs of motion.') },
+                        { name: 'Circuit Builder', desc: 'Build electric circuits', svg: svgCrystal,
+                            action: () => alert(
+                                '⚡ Circuit Lab\n\nConnect resistors, capacitors, and LEDs. Measure voltage and current at any point.') },
+                    ],
+                    forest: [
+                        { name: 'Tree Lifecycle', desc: 'Seed to full grown tree',
+                            svg: svgTree, action: () => alert(
+                                '🌱 Tree Growth Simulator\n\nWatch a seed germinate, grow roots and shoots, and develop into a mature tree over a simulated year.') },
+                        { name: 'Food Web', desc: 'Explore ecosystem links',
+                            svg: svgFish, action: () => alert(
+                                '🕸️ Interactive Food Web\n\nDrag and connect species. See how removing one affects the entire ecosystem.') },
+                        { name: 'Weather Station', desc: 'Measure climate data',
+                            svg: svgMountainIcon, action: () => alert(
+                                '🌡️ Forest Weather Station\n\nMonitor temperature, humidity, and rainfall. Compare data across seasons.') },
+                    ],
+                    space: [
+                        { name: 'Orbit Simulator', desc: 'Planets around the sun',
+                            svg: svgRocket, action: () => alert(
+                                '🪐 Orbital Mechanics\n\nPlace planets and watch them orbit. Adjust mass and distance to see effects on orbital period.') },
+                        { name: 'Star Lifecycle', desc: 'Birth to supernova', svg: svgCrystal,
+                            action: () => alert(
+                                '⭐ Stellar Evolution\n\nWatch a star form from a nebula, burn through its life stages, and end as a white dwarf or supernova.') },
+                        { name: 'Rocket Launch', desc: 'Escape Earth\'s gravity',
+                            svg: svgRocket, action: () => alert(
+                                '🚀 Rocket Simulator\n\nAdjust thrust, fuel, and payload. Try to reach orbit or escape velocity!') },
+                    ],
+                    ocean: [
+                        { name: 'Marine Life', desc: 'Explore ocean creatures',
+                            svg: svgFish, action: () => alert(
+                                '🐠 Marine Biodiversity\n\nBrowse species from plankton to whales. Learn about adaptations to depth, pressure, and darkness.') },
+                        { name: 'Coral Reef', desc: 'Build a reef ecosystem',
+                            svg: svgTree, action: () => alert(
+                                '🪸 Coral Reef Builder\n\nPlace corals, fish, and invertebrates. Watch the reef thrive or suffer from environmental changes.') },
+                        { name: 'Wave Tank', desc: 'Generate ocean waves', svg: svgBeaker,
+                            action: () => alert(
+                                '🌊 Wave Simulator\n\nCreate waves of different amplitudes and frequencies. Study interference patterns and coastal effects.') },
+                    ],
+                    workshop: [
+                        { name: 'Gear Train', desc: 'Connect rotating gears',
+                            svg: svgGear, action: () => alert(
+                                '⚙️ Gear Ratio Calculator\n\nPlace gears of different sizes. See how rotation speed and torque change through the train.') },
+                        { name: 'Lever & Pulley', desc: 'Lift heavy objects',
+                            svg: svgGear, action: () => alert(
+                                '🏗️ Simple Machines\n\nExperiment with levers, pulleys, and inclined planes. Calculate mechanical advantage.') },
+                        { name: 'Engine Model', desc: '4-stroke engine cycle',
+                            svg: svgRocket, action: () => alert(
+                                '🔧 Internal Combustion Engine\n\nWatch the 4-stroke cycle: intake, compression, power, and exhaust. See pistons and valves in action.') },
+                    ],
+                    desert: [
+                        { name: 'Rock Formation', desc: 'Geology layers', svg: svgCrystal,
+                            action: () => alert(
+                                '🪨 Stratigraphy Explorer\n\nExamine rock layers. Learn how sedimentary, metamorphic, and igneous rocks form over millions of years.') },
+                        { name: 'Sand Dunes', desc: 'Wind erosion patterns',
+                            svg: svgMountainIcon, action: () => alert(
+                                '🏜️ Dune Dynamics\n\nSimulate wind patterns and watch dunes migrate. Study erosion and desertification processes.') },
+                    ],
+                    mountain: [
+                        { name: 'Tectonic Plates', desc: 'Mountain formation',
+                            svg: svgMountainIcon, action: () => alert(
+                                '🏔️ Plate Tectonics\n\nPush plates together to form mountains. See subduction zones and volcanic activity.') },
+                        { name: 'Glacier Flow', desc: 'Ice movement study',
+                            svg: svgCrystal, action: () => alert(
+                                '❄️ Glacier Simulator\n\nWatch ice flow down valleys. Study how glaciers shape landscapes through erosion and deposition.') },
+                    ],
+                };
+                return areaItems[area] || areaItems['home'];
+            }
+
+            function showTooltipEvent(el, text) {
+                const rect = el.getBoundingClientRect();
+                tooltip.textContent = text;
+                tooltip.classList.add('visible');
+                tooltip.style.left = rect.left + rect.width / 2 + 'px';
+                tooltip.style.top = rect.top - 30 + 'px';
+                setTimeout(() => tooltip.classList.remove('visible'), 1800);
+            }
+
+            // Minimap
+            function updateMinimap() {
+                const w = 130;
+                const h = 130;
+                minimapCtx.clearRect(0, 0, w, h);
+                minimapCtx.fillStyle = '#1a1d27';
+                minimapCtx.fillRect(0, 0, w, h);
+
+                // Draw terrain blobs
+                const terrains = [
+                    { cx: 1900, cy: 1870, r: 400, color: '#3a554030' },
+                    { cx: 1610, cy: 760, r: 300, color: '#3a4a6030' },
+                    { cx: 2690, cy: 1640, r: 350, color: '#2d4a3030' },
+                    { cx: 2410, cy: 560, r: 280, color: '#2a254830' },
+                    { cx: 1660, cy: 2840, r: 320, color: '#1e405830' },
+                    { cx: 660, cy: 1620, r: 280, color: '#4a3a2a30' },
+                    { cx: 620, cy: 2520, r: 250, color: '#5a4a3030' },
+                    { cx: 740, cy: 680, r: 250, color: '#3d405030' },
+                ];
+                const sx = WORLD_W / w;
+                const sy = WORLD_H / h;
+                terrains.forEach(t => {
+                    minimapCtx.fillStyle = t.color;
+                    minimapCtx.beginPath();
+                    minimapCtx.arc(t.cx / sx, t.cy / sy, t.r / sx, 0, Math.PI * 2);
+                    minimapCtx.fill();
+                });
+
+                // Draw portals
+                portals.forEach(p => {
+                    minimapCtx.fillStyle = p.color;
+                    minimapCtx.beginPath();
+                    minimapCtx.arc(p.x / sx, p.y / sy, 3.5, 0, Math.PI * 2);
+                    minimapCtx.fill();
+                    minimapCtx.strokeStyle = '#ffffff40';
+                    minimapCtx.lineWidth = 1;
+                    minimapCtx.stroke();
+                });
+
+                // Draw player
+                minimapCtx.fillStyle = '#fff';
+                minimapCtx.beginPath();
+                minimapCtx.arc(playerX / sx, playerY / sy, 3, 0, Math.PI * 2);
+                minimapCtx.fill();
+                minimapCtx.strokeStyle = '#5b9bd5';
+                minimapCtx.lineWidth = 2;
+                minimapCtx.stroke();
+                minimapCtx.shadowColor = '#5b9bd5';
+                minimapCtx.shadowBlur = 8;
+                minimapCtx.fill();
+                minimapCtx.shadowBlur = 0;
+            }
+
+            // Event listeners
+            window.addEventListener('keydown', (e) => {
+                keys[e.code] = true;
+                if (e.code === 'KeyE' && nearestPortal && nearestPortal.area !== currentAreaEl
+                    .textContent.includes('Open World') === false) {
+                    if (nearestPortal && enterPrompt.style.display !== 'none') {
+                        enterSimulation(nearestPortal);
+                    }
+                }
+                if (e.code === 'Escape') {
+                    if (simOverlay.classList.contains('active')) {
+                        closeSimulation();
+                    }
+                }
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (nearestPortal && enterPrompt.style.display !== 'none') {
+                        enterSimulation(nearestPortal);
+                    }
+                }
+            });
+            window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+            viewport.addEventListener('click', (e) => {
+                if (simOverlay.classList.contains('active')) return;
+                const rect = viewport.getBoundingClientRect();
+                const clickViewX = e.clientX - rect.left;
+                const clickViewY = e.clientY - rect.top;
+                const worldClickX = clickViewX + cameraX;
+                const worldClickY = clickViewY + cameraY;
+                targetX = Math.max(14, Math.min(WORLD_W - 14, worldClickX));
+                targetY = Math.max(14, Math.min(WORLD_H - 14, worldClickY));
+                isMovingToTarget = true;
+            });
+
+            // Double-click on portal to enter
+            viewport.addEventListener('dblclick', (e) => {
+                if (simOverlay.classList.contains('active')) return;
+                if (nearestPortal && enterPrompt.style.display !== 'none') {
+                    enterSimulation(nearestPortal);
+                }
+            });
+
+            simClose.addEventListener('click', closeSimulation);
+
+            // Click outside sim card to close
+            simOverlay.addEventListener('click', (e) => {
+                if (e.target === simOverlay) {
+                    closeSimulation();
+                }
+            });
+
+            // Tooltip movement
+            document.addEventListener('mousemove', (e) => {
+                if (tooltip.classList.contains('visible') && !e.target.closest('.sim-item')) {
+                    // Keep tooltip near cursor for sim items
+                }
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                updateCamera();
+                updateMinimap();
+            });
+
+            // Game loop
+            function gameLoop() {
+                handleKeyboardMovement();
+                if (isMovingToTarget) {
+                    moveToTarget();
+                }
+                updateMinimap();
+                requestAnimationFrame(gameLoop);
+            }
+
+            // Initialize
+            updateCamera();
+            updatePlayerVisual();
+            updateNearestPortal();
+            updateMinimap();
+            gameLoop();
+
+            // Expose for debugging
+            window.virtuWorld = {
+                playerX,
+                playerY,
+                portals,
+                nearestPortal,
+                enterSimulation,
+                closeSimulation,
+                get playerPos() { return { x: playerX, y: playerY }; },
+                teleport: (areaId) => {
+                    const p = portals.find(pp => pp.area === areaId);
+                    if (p) {
+                        playerX = p.x;
+                        playerY = p.y;
+                        targetX = p.x;
+                        targetY = p.y;
+                        isMovingToTarget = false;
+                        updatePlayerVisual();
+                        updateCamera();
+                        updateNearestPortal();
+                        updateMinimap();
+                    }
+                },
+            };
+
+            console.log('🌍 VirtuWorld initialized!');
+            console.log('  Use WASD or click to move');
+            console.log('  Press E or Space near buildings to enter');
+            console.log('  Press Escape to close simulations');
+            console.log('  Try: virtuWorld.teleport("space") to jump!');
+            console.log('  Available areas:', portals.map(p => p.area).join(', '));
+        })();
+    </script>
+</body>
+</html>

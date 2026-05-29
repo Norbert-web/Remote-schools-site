@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lamn Nobert's Remote Schools — Frontend Prototype</title>
+
+  <!-- PWA manifest (placeholder) -->
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Favicons and meta -->
+  <meta name="description" content="Lamn Nobert's Remote Schools — modern remote learning platform frontend prototype." />
+  <meta name="theme-color" content="#0b5cff" />
+
+  <!-- Google Fonts (placeholder) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Styles: long, modular CSS for a professional look -->
+  <style>
+    /* Reset and base */
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#94a3b8; --accent:#0b5cff; --success:#16a34a;
+      --glass: rgba(255,255,255,0.04);
+      --radius:12px; --max-width:1200px; --gap:18px;
+      --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:var(--font-sans); background:linear-gradient(180deg,#071028 0%, #071a2a 60%); color:#e6eef8;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; line-height:1.45;
+    }
+    .container{max-width:var(--max-width); margin:28px auto; padding:0 20px;}
+
+    /* Header */
+    header.site-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px;border-radius:14px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:20px}
+    .brand h1{margin:0;font-size:18px;letter-spacing:0.2px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+    /* Top controls */
+    .controls{display:flex;align-items:center;gap:12px}
+    .search {position:relative}
+    .search input{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:10px 36px 10px 12px;border-radius:10px;color:inherit;width:320px}
+    .search button{position:absolute;right:4px;top:4px;border:0;background:transparent;color:var(--muted);padding:8px;border-radius:8px;cursor:pointer}
+    .btn{background:linear-gradient(90deg,var(--accent),#6b8cff);border:0;padding:10px 14px;border-radius:10px;color:white;font-weight:600;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
+
+    /* Layout grid */
+    .grid{display:grid;grid-template-columns: 320px 1fr 360px;gap:var(--gap);align-items:start}
+    @media (max-width:1100px){ .grid{grid-template-columns: 1fr; } .controls .search input{width:200px} }
+
+    /* Sidebar */
+    aside.sidebar{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;min-height:320px}
+    .nav-section{margin-bottom:18px}
+    .nav-section h3{margin:0 0 8px 0;font-size:13px;color:var(--muted)}
+    .nav-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+    .nav-list li{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;color:#cfe6ff}
+    .nav-list li:hover{background:rgba(255,255,255,0.02)}
+
+    /* Main content */
+    main.content{min-height:600px}
+    .hero{display:flex;align-items:center;justify-content:space-between;padding:22px;border-radius:12px;background:linear-gradient(90deg, rgba(11,92,255,0.08), rgba(124,58,237,0.04));margin-bottom:18px}
+    .hero .left{max-width:60%}
+    .hero h2{margin:0;font-size:22px}
+    .hero p{margin:8px 0 0 0;color:var(--muted)}
+    .hero .cta{margin-top:12px;display:flex;gap:10px}
+
+    /* Course cards */
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media (max-width:900px){ .cards{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:600px){ .cards{grid-template-columns:1fr} }
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.6);display:flex;flex-direction:column;gap:10px}
+    .card .meta{display:flex;justify-content:space-between;align-items:center}
+    .card h4{margin:0;font-size:16px}
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:12px;color:var(--muted)}
+
+    /* Right column widgets */
+    .widget{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px}
+    .widget h3{margin:0 0 10px 0;font-size:14px;color:var(--muted)}
+
+    /* Course builder (drag & drop mock) */
+    .builder{display:flex;gap:12px}
+    .builder .palette, .builder .canvas{flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    .draggable{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);cursor:grab;margin-bottom:8px}
+
+    /* Video player */
+    .video-wrap{position:relative;border-radius:10px;overflow:hidden;background:#000}
+    .video-wrap video{width:100%;height:auto;display:block}
+    .video-controls{display:flex;gap:8px;padding:8px;background:linear-gradient(180deg, rgba(0,0,0,0.4), transparent);position:absolute;bottom:8px;left:8px;border-radius:8px}
+
+    /* Gamification */
+    .badges{display:flex;gap:10px;flex-wrap:wrap}
+    .badge{background:linear-gradient(135deg,#ffd166,#f97316);padding:10px;border-radius:10px;color:#08101a;font-weight:700}
+
+    /* Progress tracker */
+    .progress{background:rgba(255,255,255,0.04);height:12px;border-radius:8px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#7c3aed);width:40%}
+
+    /* Notifications */
+    .toast-list{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:9999}
+    .toast{background:#071a2a;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);min-width:220px}
+
+    /* Footer */
+    footer{margin-top:28px;padding:18px;border-radius:12px;background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));display:flex;justify-content:space-between;align-items:center;color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Accessibility focus */
+    a:focus, button:focus, input:focus {outline:3px solid rgba(11,92,255,0.18);outline-offset:2px}
+
+    /* Utility */
+    .muted{color:var(--muted)}
+    .flex{display:flex;align-items:center;gap:10px}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <!-- Header -->
+    <header class="site-header" role="banner" aria-label="Main header">
+      <div class="brand" aria-hidden="false">
+        <div class="logo" aria-hidden="true">LN</div>
+        <div>
+          <h1>Lamn Nobert's Remote Schools</h1>
+          <p class="muted">Modern remote learning — frontend prototype</p>
+        </div>
+      </div>
+
+      <div class="controls" role="navigation" aria-label="Top controls">
+        <!-- Search with filters (feature: search + filters) -->
+        <div class="search" role="search" aria-label="Search courses">
+          <input id="searchInput" type="search" placeholder="Search courses, topics, teachers..." aria-label="Search courses" />
+          <button id="searchBtn" aria-label="Search">🔍</button>
+        </div>
+
+        <!-- Theme switcher (feature: theme toggle) -->
+        <button id="themeToggle" class="ghost" aria-pressed="false" title="Toggle theme">🌙 Theme</button>
+
+        <!-- Language selector (feature: localization stub) -->
+        <select id="langSelect" aria-label="Select language" class="ghost">
+          <option value="en">EN</option>
+          <option value="es">ES</option>
+          <option value="fr">FR</option>
+        </select>
+
+        <!-- Notifications (feature: in-app notifications) -->
+        <button id="notifBtn" class="ghost" aria-haspopup="true" aria-expanded="false" title="Notifications">🔔 <span id="notifCount" style="font-weight:700;color:#ffd166;margin-left:6px">3</span></button>
+
+        <!-- Sign in placeholder -->
+        <button id="signInBtn" class="btn" aria-label="Sign in">Sign in</button>
+      </div>
+    </header>
+
+    <!-- Main grid: sidebar, content, right widgets -->
+    <div class="grid" role="main" aria-label="Main content area">
+      <!-- Sidebar (feature: role-based nav placeholder, accessibility) -->
+      <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
+        <div class="nav-section" aria-hidden="false">
+          <h3>Navigation</h3>
+          <ul class="nav-list" role="list">
+            <li tabindex="0" data-view="catalog">📚 Course Catalog</li>
+            <li tabindex="0" data-view="builder">🛠 Course Builder</li>
+            <li tabindex="0" data-view="classroom">🎥 Virtual Classroom</li>
+            <li tabindex="0" data-view="mentors">🤝 Mentorship Hub</li>
+            <li tabindex="0" data-view="gamify">🏆 Gamification</li>
+            <li tabindex="0" data-view="analytics">📈 Analytics</li>
+            <li tabindex="0" data-view="calendar">📅 Calendar</li>
+            <li tabindex="0" data-view="admin">⚙️ Admin Dashboard</li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <h3>Filters</h3>
+          <div class="muted" style="font-size:13px;margin-bottom:8px">Level</div>
+          <div style="display:flex;gap:8px">
+            <button class="ghost filter-btn" data-filter="beginner">Beginner</button>
+            <button class="ghost filter-btn" data-filter="intermediate">Intermediate</button>
+            <button class="ghost filter-btn" data-filter="advanced">Advanced</button>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <h3>Quick actions</h3>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button id="newCourseBtn" class="btn">+ New Course</button>
+            <button id="uploadResource" class="ghost">Upload Resource</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <main class="content" role="main" aria-live="polite">
+        <!-- Hero -->
+        <section class="hero" aria-label="Platform overview">
+          <div class="left">
+            <h2>Learn, teach, and collaborate — anywhere</h2>
+            <p class="muted">A modern remote learning experience with modular courses, mentorship, and real-time classrooms.</p>
+            <div class="cta">
+              <button class="btn" id="exploreBtn">Explore Courses</button>
+              <button class="ghost" id="demoBtn">Request Demo</button>
+            </div>
+          </div>
+          <div class="right" style="min-width:260px;text-align:right">
+            <div class="muted">Your progress</div>
+            <div style="margin-top:8px">
+              <div class="progress" aria-hidden="false" aria-label="Course progress">
+                <i id="progressBar" style="width:42%"></i>
+              </div>
+              <div class="muted" style="font-size:13px;margin-top:6px">42% complete • 6 courses in progress</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Course catalog (feature: search + filters + lazy loading) -->
+        <section id="catalogView" aria-label="Course catalog">
+          <h3 style="margin-top:0">Course Catalog</h3>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div class="muted">Showing <strong id="courseCount">9</strong> courses</div>
+            <div class="flex">
+              <label class="muted" for="sortSelect">Sort</label>
+              <select id="sortSelect" class="ghost" style="margin-left:8px">
+                <option value="popular">Most popular</option>
+                <option value="new">Newest</option>
+                <option value="rating">Top rated</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cards" id="courseCards" aria-live="polite">
+            <!-- Course cards are injected by JS (placeholder content below) -->
+          </div>
+
+          <!-- Load more (lazy load placeholder) -->
+          <div style="text-align:center;margin-top:18px">
+            <button id="loadMore" class="ghost">Load more courses</button>
+          </div>
+        </section>
+
+        <!-- Course builder (feature: drag-and-drop mock, rich text editor placeholder) -->
+        <section id="builderView" class="hidden" aria-label="Course builder">
+          <h3>Course Builder (Drag & Drop)</h3>
+          <div class="builder" aria-hidden="false">
+            <div class="palette" aria-label="Content palette">
+              <div class="muted" style="margin-bottom:8px">Content blocks</div>
+              <div class="draggable" draggable="true" data-type="heading">Heading</div>
+              <div class="draggable" draggable="true" data-type="paragraph">Paragraph</div>
+              <div class="draggable" draggable="true" data-type="video">Video</div>
+              <div class="draggable" draggable="true" data-type="quiz">Quiz</div>
+              <div class="draggable" draggable="true" data-type="assignment">Assignment</div>
+            </div>
+            <div class="canvas" id="builderCanvas" aria-label="Course canvas" tabindex="0">
+              <div class="muted">Drop blocks here to build your lesson</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:10px">
+            <button id="saveCourse" class="btn">Save draft</button>
+            <button id="previewCourse" class="ghost">Preview</button>
+          </div>
+        </section>
+
+        <!-- Virtual classroom (feature: WebRTC UI placeholder, chat, whiteboard stub) -->
+        <section id="classroomView" class="hidden" aria-label="Virtual classroom">
+          <h3>Virtual Classroom</h3>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px">
+            <div>
+              <div class="video-wrap" style="height:320px;background:#000;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff">
+                <!-- Placeholder for WebRTC video grid -->
+                <div id="videoGrid" style="width:100%;height:100%;display:flex;flex-wrap:wrap;gap:6px;padding:6px;align-content:flex-start">
+                  <div style="flex:1 1 48%;background:#111;border-radius:8px;display:flex;align-items:center;justify-content:center">Local video</div>
+                  <div style="flex:1 1 48%;background:#111;border-radius:8px;display:flex;align-items:center;justify-content:center">Peer 1</div>
+                  <div style="flex:1 1 48%;background:#111;border-radius:8px;display:flex;align-items:center;justify-content:center">Peer 2</div>
+                </div>
+              </div>
+
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="btn" id="startClass">Start class</button>
+                <button class="ghost" id="shareScreen">Share screen</button>
+                <button class="ghost" id="toggleWhiteboard">Open whiteboard</button>
+              </div>
+            </div>
+
+            <aside style="display:flex;flex-direction:column;gap:8px">
+              <div class="widget">
+                <h3>Chat</h3>
+                <div id="chatBox" style="height:160px;overflow:auto;background:rgba(255,255,255,0.02);padding:8px;border-radius:8px"></div>
+                <div style="display:flex;gap:8px;margin-top:8px">
+                  <input id="chatInput" class="ghost" placeholder="Say something..." style="flex:1" />
+                  <button id="sendChat" class="btn">Send</button>
+                </div>
+              </div>
+
+              <div class="widget">
+                <h3>Participants</h3>
+                <ul id="participants" style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px">
+                  <li>Teacher • Nobert</li>
+                  <li>Student • Aisha</li>
+                  <li>Student • John</li>
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Mentorship hub (feature: mentor matching UI) -->
+        <section id="mentorsView" class="hidden" aria-label="Mentorship hub">
+          <h3>Mentorship Hub</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="card" style="min-width:220px">
+              <div class="meta"><h4>Dr. Amina K.</h4><div class="muted">Data Science</div></div>
+              <p class="muted">10+ years experience • Mentor rating 4.9</p>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn connectMentor" data-id="m1">Request mentorship</button>
+                <button class="ghost">View profile</button>
+              </div>
+            </div>
+
+            <div class="card" style="min-width:220px">
+              <div class="meta"><h4>Mr. Samuel R.</h4><div class="muted">Frontend</div></div>
+              <p class="muted">Senior engineer • Mentor rating 4.8</p>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn connectMentor" data-id="m2">Request mentorship</button>
+                <button class="ghost">View profile</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Gamification (feature: badges, leaderboards) -->
+        <section id="gamifyView" class="hidden" aria-label="Gamification">
+          <h3>Gamification</h3>
+          <div style="display:flex;gap:12px;align-items:center">
+            <div>
+              <div class="muted">Your badges</div>
+              <div class="badges" style="margin-top:8px">
+                <div class="badge">Top Learner</div>
+                <div class="badge">Quiz Master</div>
+                <div class="badge">Mentor</div>
+              </div>
+            </div>
+            <div style="flex:1">
+              <div class="muted">Leaderboard</div>
+              <ol style="margin:8px 0 0 0;padding-left:18px;color:#cfe6ff">
+                <li>Nobert — 12,400 pts</li>
+                <li>Aisha — 11,200 pts</li>
+                <li>John — 9,800 pts</li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <!-- Analytics (feature: client-side analytics stub) -->
+        <section id="analyticsView" class="hidden" aria-label="Analytics">
+          <h3>Analytics (Client-side)</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="widget" style="flex:1;min-width:220px">
+              <h3>Active learners</h3>
+              <div style="font-size:22px;font-weight:700">1,240</div>
+              <div class="muted">Last 7 days</div>
+            </div>
+            <div class="widget" style="flex:1;min-width:220px">
+              <h3>Avg. completion</h3>
+              <div style="font-size:22px;font-weight:700">62%</div>
+              <div class="muted">Across all courses</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Calendar (feature: calendar UI placeholder) -->
+        <section id="calendarView" class="hidden" aria-label="Calendar">
+          <h3>Calendar</h3>
+          <div style="display:flex;gap:12px">
+            <div class="widget" style="flex:1">
+              <h3>Upcoming</h3>
+              <ul style="list-style:none;padding:0;margin:0">
+                <li style="padding:8px;border-bottom:1px dashed rgba(255,255,255,0.02)">Mon • 10:00 — Data Science Live</li>
+                <li style="padding:8px;border-bottom:1px dashed rgba(255,255,255,0.02)">Tue • 14:00 — Frontend Workshop</li>
+              </ul>
+            </div>
+            <div class="widget" style="width:320px">
+              <h3>Add event</h3>
+              <input id="eventTitle" class="ghost" placeholder="Event title" style="width:100%;margin-bottom:8px" />
+              <input id="eventDate" type="date" class="ghost" style="width:100%;margin-bottom:8px" />
+              <button id="addEvent" class="btn">Add to calendar</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Admin dashboard (feature: admin UI placeholder) -->
+        <section id="adminView" class="hidden" aria-label="Admin dashboard">
+          <h3>Admin Dashboard</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div class="widget" style="min-width:220px">
+              <h3>Users</h3>
+              <div style="font-size:20px;font-weight:700">12,400</div>
+            </div>
+            <div class="widget" style="min-width:220px">
+              <h3>Courses</h3>
+              <div style="font-size:20px;font-weight:700">320</div>
+            </div>
+            <div class="widget" style="min-width:220px">
+              <h3>Storage</h3>
+              <div style="font-size:20px;font-weight:700">1.2 TB</div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Right column: widgets -->
+      <aside class="sidebar" aria-label="Right widgets">
+        <div class="widget">
+          <h3>Profile</h3>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#0b5cff);display:flex;align-items:center;justify-content:center;font-weight:800">N</div>
+            <div>
+              <div style="font-weight:700">Nobert</div>
+              <div class="muted" style="font-size:13px">Teacher • Kampala</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="widget">
+          <h3>Quick stats</h3>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="muted">Courses published <strong>12</strong></div>
+            <div class="muted">Active students <strong>1,240</strong></div>
+            <div class="muted">Avg rating <strong>4.8</strong></div>
+          </div>
+        </div>
+
+        <div class="widget">
+          <h3>Resources</h3>
+          <ul style="list-style:none;padding:0;margin:0">
+            <li><a href="#" class="muted">Instructor guide</a></li>
+            <li><a href="#" class="muted">Design system</a></li>
+            <li><a href="#" class="muted">API docs (placeholder)</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Toast notifications container (feature: in-app notifications) -->
+    <div class="toast-list" id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+      <div class="small">© <strong>Lamn Nobert's Remote Schools</strong> — Built with care</div>
+      <div class="small">Version 0.1 • Frontend prototype</div>
+    </footer>
+  </div>
+
+  <!-- Scripts: long, modular JS implementing interactions and placeholders -->
+  <script>
+    /**********************************************************************
+     * Lamn Nobert's Remote Schools — Frontend JS
+     * - Implements UI interactions, placeholders for advanced features,
+     *   and client-side mock data.
+     * - No backend calls are made; all data is mocked for demonstration.
+     **********************************************************************/
+
+    // -------------------------
+    // Mock data (courses, users)
+    // -------------------------
+    const MOCK_COURSES = [
+      { id: 'c1', title: 'Fullstack Web Development', teacher: 'Nobert', tags: ['web','js','node'], level:'intermediate', rating:4.8, students:1240, published:true },
+      { id: 'c2', title: 'Data Science Essentials', teacher: 'Amina', tags: ['data','python','ml'], level:'advanced', rating:4.9, students:980, published:true },
+      { id: 'c3', title: 'Intro to UI/UX', teacher: 'Samuel', tags: ['design','ux'], level:'beginner', rating:4.6, students:540, published:true },
+      { id: 'c4', title: 'Cloud Fundamentals', teacher: 'Grace', tags: ['cloud','aws'], level:'intermediate', rating:4.7, students:430, published:true },
+      { id: 'c5', title: 'Mobile App Development', teacher: 'Lina', tags: ['mobile','react-native'], level:'intermediate', rating:4.5, students:320, published:true },
+      { id: 'c6', title: 'AI Ethics', teacher: 'Dr. K', tags: ['ethics','ai'], level:'advanced', rating:4.4, students:210, published:true },
+      { id: 'c7', title: 'Entrepreneurship 101', teacher: 'Moses', tags: ['business','startup'], level:'beginner', rating:4.3, students:150, published:true },
+      { id: 'c8', title: 'Cybersecurity Basics', teacher: 'Rita', tags: ['security'], level:'intermediate', rating:4.6, students:410, published:true },
+      { id: 'c9', title: 'Advanced CSS & Animations', teacher: 'Samuel', tags: ['css','design'], level:'advanced', rating:4.7, students:290, published:true },
+    ];
+
+    // -------------------------
+    // Utility helpers
+    // -------------------------
+    function el(q, ctx=document) { return ctx.querySelector(q); }
+    function elAll(q, ctx=document) { return Array.from(ctx.querySelectorAll(q)); }
+    function create(tag, attrs={}, children=[]) {
+      const e = document.createElement(tag);
+      for (const k in attrs) {
+        if (k === 'class') e.className = attrs[k];
+        else if (k.startsWith('data-')) e.setAttribute(k, attrs[k]);
+        else if (k === 'text') e.textContent = attrs[k];
+        else e[k] = attrs[k];
+      }
+      children.forEach(c => e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
+      return e;
+    }
+
+    // -------------------------
+    // Render course cards (feature: lazy loading + placeholders)
+    // -------------------------
+    const courseCards = el('#courseCards');
+    let visibleCourses = 6;
+    function renderCourses() {
+      courseCards.innerHTML = '';
+      const list = MOCK_COURSES.slice(0, visibleCourses);
+      el('#courseCount').textContent = list.length;
+      list.forEach(c => {
+        const card = create('article', { class: 'card', role:'article', 'aria-labelledby': `title-${c.id}` });
+        const meta = create('div', { class: 'meta' }, [
+          create('h4', { id:`title-${c.id}`, text: c.title }),
+          create('div', { class: 'muted', text: `${c.rating} ★` })
+        ]);
+        const desc = create('p', { class: 'muted', text: `By ${c.teacher} • ${c.students} students` });
+        const tags = create('div', { class: 'tags' });
+        (c.tags || []).forEach(t => tags.appendChild(create('span', { class: 'tag', text: t })));
+        const actions = create('div', { class: 'flex' });
+        const enroll = create('button', { class: 'btn', text: 'Enroll' });
+        enroll.addEventListener('click', () => enrollCourse(c.id));
+        const preview = create('button', { class: 'ghost', text: 'Preview' });
+        preview.addEventListener('click', () => previewCourse(c.id));
+        actions.appendChild(enroll); actions.appendChild(preview);
+
+        card.appendChild(meta); card.appendChild(desc); card.appendChild(tags); card.appendChild(actions);
+        courseCards.appendChild(card);
+      });
+    }
+
+    // Load initial courses
+    renderCourses();
+
+    // Load more button (lazy load)
+    el('#loadMore').addEventListener('click', () => {
+      visibleCourses = Math.min(MOCK_COURSES.length, visibleCourses + 3);
+      renderCourses();
+      showToast('Loaded more courses', 'info');
+    });
+
+    // -------------------------
+    // Search and filters (feature: client-side search + filters)
+    // -------------------------
+    function applySearchAndFilters() {
+      const q = el('#searchInput').value.trim().toLowerCase();
+      const filterBtns = elAll('.filter-btn').filter(b => b.classList.contains('active'));
+      const activeFilters = filterBtns.map(b => b.dataset.filter);
+      let results = MOCK_COURSES.slice();
+      if (q) {
+        results = results.filter(c => (c.title + ' ' + c.tags.join(' ') + ' ' + c.teacher).toLowerCase().includes(q));
+      }
+      if (activeFilters.length) {
+        results = results.filter(c => activeFilters.includes(c.level));
+      }
+      // Replace visible list with results (simple)
+      courseCards.innerHTML = '';
+      el('#courseCount').textContent = results.length;
+      results.forEach(c => {
+        const card = create('article', { class: 'card' });
+        card.innerHTML = `<div class="meta"><h4>${c.title}</h4><div class="muted">${c.rating} ★</div></div>
+                          <p class="muted">By ${c.teacher} • ${c.students} students</p>
+                          <div class="tags">${(c.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+                          <div style="display:flex;gap:8px;margin-top:8px"><button class="btn">Enroll</button><button class="ghost">Preview</button></div>`;
+        courseCards.appendChild(card);
+      });
+    }
+
+    el('#searchBtn').addEventListener('click', applySearchAndFilters);
+    el('#searchInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') applySearchAndFilters(); });
+
+    elAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        btn.style.background = btn.classList.contains('active') ? 'linear-gradient(90deg,var(--accent),#7c3aed)' : '';
+        applySearchAndFilters();
+      });
+    });
+
+    // -------------------------
+    // Theme toggle (feature: theme switcher)
+    // -------------------------
+    const themeToggle = el('#themeToggle');
+    themeToggle.addEventListener('click', () => {
+      const dark = document.documentElement.getAttribute('data-theme') !== 'dark';
+      if (dark) {
+        document.documentElement.setAttribute('data-theme','dark');
+        document.body.style.background = 'linear-gradient(180deg,#071028 0%, #071a2a 60%)';
+        themeToggle.textContent = '☀️ Light';
+        themeToggle.setAttribute('aria-pressed','true');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        document.body.style.background = 'linear-gradient(180deg,#f7fafc 0%, #eef2ff 60%)';
+        themeToggle.textContent = '🌙 Dark';
+        themeToggle.setAttribute('aria-pressed','false');
+      }
+      showToast('Theme updated', 'success');
+    });
+
+    // -------------------------
+    // Simple enrollment & preview (feature: enrollment modal placeholder)
+    // -------------------------
+    function enrollCourse(courseId) {
+      const course = MOCK_COURSES.find(c => c.id === courseId);
+      showToast(`Enrolled in ${course.title}`, 'success');
+      // Update progress bar mock
+      const bar = el('#progressBar');
+      const newWidth = Math.min(100, parseInt(bar.style.width) + 6);
+      bar.style.width = newWidth + '%';
+    }
+    function previewCourse(courseId) {
+      const course = MOCK_COURSES.find(c => c.id === courseId);
+      showToast(`Previewing ${course.title}`, 'info');
+      // Scroll to top and show a mock preview (for demo)
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // -------------------------
+    // Course builder drag & drop (feature: drag-and-drop UI)
+    // -------------------------
+    const draggables = elAll('.draggable');
+    const canvas = el('#builderCanvas');
+    draggables.forEach(d => {
+      d.addEventListener('dragstart', (ev) => {
+        ev.dataTransfer.setData('text/plain', d.dataset.type);
+      });
+    });
+    canvas.addEventListener('dragover', (ev) => { ev.preventDefault(); canvas.style.border = '2px dashed rgba(11,92,255,0.2)'; });
+    canvas.addEventListener('dragleave', () => { canvas.style.border = ''; });
+    canvas.addEventListener('drop', (ev) => {
+      ev.preventDefault(); canvas.style.border = '';
+      const type = ev.dataTransfer.getData('text/plain');
+      const block = create('div', { class: 'card', text: `Block: ${type}` });
+      canvas.appendChild(block);
+      showToast(`Added ${type} block`, 'info');
+    });
+
+    // -------------------------
+    // Chat and classroom placeholders (feature: virtual classroom UI)
+    // -------------------------
+    el('#sendChat').addEventListener('click', () => {
+      const txt = el('#chatInput').value.trim();
+      if (!txt) return;
+      const box = el('#chatBox');
+      const msg = create('div', { class: 'muted', text: `You: ${txt}` });
+      box.appendChild(msg);
+      el('#chatInput').value = '';
+      box.scrollTop = box.scrollHeight;
+    });
+
+    // Start class (placeholder)
+    el('#startClass').addEventListener('click', () => {
+      showToast('Starting virtual classroom (UI placeholder)', 'info');
+    });
+
+    // -------------------------
+    // Mentorship requests (feature: mentorship UI)
+    // -------------------------
+    elAll('.connectMentor').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        showToast('Mentorship request sent', 'success');
+      });
+    });
+
+    // -------------------------
+    // Notifications (feature: in-app notifications)
+    // -------------------------
+    const toasts = el('#toasts');
+    function showToast(message, type='info', ttl=4000) {
+      const t = create('div', { class: 'toast', role:'status', 'aria-live':'polite' });
+      t.textContent = message;
+      toasts.appendChild(t);
+      setTimeout(() => t.remove(), ttl);
+    }
+
+    // Example initial notifications
+    setTimeout(()=>showToast('Welcome back, Nobert!', 'success', 5000), 800);
+    setTimeout(()=>showToast('New message from Aisha', 'info', 6000), 1600);
+
+    // Notification button toggles (simple)
+    el('#notifBtn').addEventListener('click', () => {
+      const expanded = el('#notifBtn').getAttribute('aria-expanded') === 'true';
+      el('#notifBtn').setAttribute('aria-expanded', String(!expanded));
+      showToast('Opened notifications', 'info');
+    });
+
+    // -------------------------
+    // Calendar add event (feature: calendar UI)
+    // -------------------------
+    el('#addEvent').addEventListener('click', () => {
+      const title = el('#eventTitle').value.trim();
+      const date = el('#eventDate').value;
+      if (!title || !date) { showToast('Please provide title and date', 'info'); return; }
+      showToast(`Event "${title}" added on ${date}`, 'success');
+      el('#eventTitle').value = ''; el('#eventDate').value = '';
+    });
+
+    // -------------------------
+    // Simple client-side analytics stub (feature: analytics)
+    // -------------------------
+    function trackEvent(type, payload={}) {
+      // In a real app this would POST to analytics endpoint.
+      console.log('[analytics]', type, payload);
+    }
+    // Track page view
+    trackEvent('page_view', { path: location.pathname, ts: Date.now() });
+
+    // -------------------------
+    // Localization stub (feature: localization)
+    // -------------------------
+    el('#langSelect').addEventListener('change', (e) => {
+      const lang = e.target.value;
+      showToast(`Language switched to ${lang.toUpperCase()} (UI placeholder)`, 'info');
+      // In a real app, load translations and re-render text.
+    });
+
+    // -------------------------
+    // Simple client-side "admin" view switcher (feature: role-based UI)
+    // -------------------------
+    elAll('.nav-list li').forEach(li => {
+      li.addEventListener('click', () => {
+        const view = li.dataset.view;
+        // Hide all views
+        ['catalogView','builderView','classroomView','mentorsView','gamifyView','analyticsView','calendarView','adminView'].forEach(id => {
+          const elv = el('#' + id);
+          if (elv) elv.classList.add('hidden');
+        });
+        // Show selected
+        const target = el('#' + view + 'View') || el('#' + view);
+        if (target) target.classList.remove('hidden');
+        // Accessibility: focus main
+        el('main.content').focus();
+        trackEvent('navigate', { view });
+      });
+    });
+
+    // -------------------------
+    // Theme persistence (localStorage)
+    // -------------------------
+    if (localStorage.getItem('ln-theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme','dark');
+      themeToggle.textContent = '☀️ Light';
+    }
+    themeToggle.addEventListener('click', () => {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      localStorage.setItem('ln-theme', dark ? 'light' : 'dark');
+    });
+
+    // -------------------------
+    // Accessibility helpers (feature: keyboard navigation)
+    // -------------------------
+    document.addEventListener('keydown', (e) => {
+      // Press "g" to focus search
+      if (e.key === 'g' && !e.metaKey && !e.ctrlKey) {
+        el('#searchInput').focus();
+      }
+      // Press "/" to open quick search
+      if (e.key === '/') {
+        e.preventDefault();
+        el('#searchInput').focus();
+      }
+    });
+
+    // -------------------------
+    // Service worker registration (feature: PWA offline stub)
+    // -------------------------
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker?.register('/sw.js').then(reg => {
+        console.log('Service worker registered', reg);
+      }).catch(err => {
+        console.warn('SW registration failed', err);
+      });
+    }
+
+    // -------------------------
+    // Onload: small animations and initializations
+    // -------------------------
+    window.addEventListener('load', () => {
+      // Animate hero progress
+      const bar = el('#progressBar');
+      bar.style.transition = 'width 800ms ease';
+      setTimeout(()=>bar.style.width = '42%', 200);
+      // Render initial courses (already done)
+      renderCourses();
+    });
+
+    // -------------------------
+    // Exported functions for dev console (for demo)
+    // -------------------------
+    window.LN = {
+      showToast, renderCourses, MOCK_COURSES, trackEvent
+    };
+  </script>
+
+  <!-- PWA manifest placeholder (inline for demo) -->
+  <script type="application/json" id="manifest-placeholder">
+  {
+    "name": "Lamn Nobert's Remote Schools",
+    "short_name": "LN Remote",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#071028",
+    "theme_color": "#0b5cff",
+    "icons": []
+  }
+  </script>
+
+  <!-- Service worker file stub (for demo only; in production serve a real sw.js) -->
+  <script>
+    // Create a minimal service worker file dynamically for demo environments where /sw.js isn't served.
+    // This is a safe placeholder: it does not cache sensitive data and only demonstrates registration.
+    (async function createSWStub(){
+      if (!('serviceWorker' in navigator)) return;
+      try {
+        const swCode = `
+          self.addEventListener('install', event => { self.skipWaiting(); });
+          self.addEventListener('activate', event => { self.clients.claim(); });
+          self.addEventListener('fetch', event => {
+            // Basic network-first strategy for demo
+            event.respondWith(fetch(event.request).catch(()=>caches.match(event.request)));
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        await navigator.serviceWorker.register(url);
+        console.log('Dynamic SW stub registered');
+      } catch (err) {
+        console.warn('Could not register dynamic SW stub', err);
+      }
+    })();
+  </script>
+</body>
+</html>

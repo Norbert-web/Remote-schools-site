@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Schools Examination Board | Biology Exam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s;
+        }
+
+        /* Login Container */
+        .login-container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .board-logo {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #1a3e6f;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .board-subtitle {
+            font-size: 0.9rem;
+            color: #5a6b7a;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .login-container h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.2s;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #1a3e6f;
+            box-shadow: 0 0 0 3px rgba(26, 62, 111, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #1a3e6f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            letter-spacing: 0.8px;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: #0f2b4f;
+        }
+
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+
+        .error-message {
+            color: #c0392b;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Exam Container (hidden by default) */
+        .exam-container {
+            display: none;
+            background: white;
+            width: 100%;
+            max-width: 900px;
+            padding: 35px 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            border: 1px solid #dce5ed;
+        }
+
+        .exam-header {
+            text-align: center;
+            border-bottom: 3px double #1a3e6f;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .exam-board {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1a3e6f;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .exam-cert {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 8px 0;
+            letter-spacing: 1px;
+        }
+
+        .exam-subject {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0b1c2e;
+            margin-top: 10px;
+        }
+
+        .exam-paper {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #2c3e50;
+            margin: 5px 0;
+        }
+
+        .exam-time {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #c0392b;
+            margin-top: 8px;
+        }
+
+        .instructions {
+            background: #f8fafd;
+            border-left: 5px solid #1a3e6f;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .instructions strong {
+            color: #1a3e6f;
+        }
+
+        .question-section {
+            margin-top: 25px;
+        }
+
+        .question-text {
+            margin-bottom: 25px;
+            line-height: 1.7;
+            font-size: 1rem;
+            color: #1e293b;
+        }
+
+        .task {
+            font-weight: 700;
+            margin-top: 15px;
+            color: #0b1c2e;
+        }
+
+        .answer-section {
+            margin-top: 35px;
+            border-top: 2px dashed #a0b4c8;
+            padding-top: 25px;
+        }
+
+        .answer-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a3e6f;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .answer-block {
+            background: #f9fbfd;
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e8f0;
+        }
+
+        .answer-block h4 {
+            font-weight: 700;
+            color: #1a3e6f;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 5px;
+        }
+
+        .answer-block ul {
+            list-style-type: disc;
+            padding-left: 25px;
+            line-height: 1.7;
+        }
+
+        .answer-block ul li {
+            margin-bottom: 6px;
+            color: #2d3a4a;
+        }
+
+        .answer-block p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            color: #2d3a4a;
+        }
+
+        .answer-block strong {
+            color: #0f2b4f;
+        }
+
+        .logout-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: transparent;
+            border: 2px solid #1a3e6f;
+            color: #1a3e6f;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #1a3e6f;
+            color: white;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            .board-logo {
+                font-size: 2rem;
+            }
+
+            .exam-container {
+                padding: 20px 15px;
+            }
+
+            .exam-board {
+                font-size: 1.4rem;
+            }
+
+            .exam-subject {
+                font-size: 1.3rem;
+            }
+
+            .answer-block {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .board-logo {
+                font-size: 1.6rem;
+            }
+
+            .login-btn {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+        <div class="board-logo">RSEB</div>
+        <div class="board-subtitle">Remote Schools Examination Board</div>
+        <h3>Candidate Login</h3>
+        <div class="input-group">
+            <label for="username">Username / Index Number</label>
+            <input type="text" id="username" placeholder="e.g., U001/2025" autocomplete="off">
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+        </div>
+        <button class="login-btn" id="loginBtn">Sign In</button>
+        <div class="error-message" id="errorMsg">Invalid credentials. Please try again.</div>
+        <p style="margin-top: 15px; font-size: 0.8rem; color: #7f8c8d;">Demo: any username & password works</p>
+    </div>
+
+    <!-- Exam Section (hidden initially) -->
+    <div id="examSection" class="exam-container">
+        <div class="exam-header">
+            <div class="exam-board">Remote Schools Examination Board</div>
+            <div class="exam-cert">Uganda Certificate of Education</div>
+            <div class="exam-subject">BIOLOGY</div>
+            <div class="exam-paper">Paper 1 (Practical & Theory)</div>
+            <div class="exam-time">Time: 1 hour 15 minutes</div>
+        </div>
+
+        <div class="instructions">
+            <strong>INSTRUCTIONS TO CANDIDATES:</strong><br>
+            • Answer <strong>all</strong> tasks in this paper.<br>
+            • Write your answers clearly in the spaces provided.<br>
+            • This paper consists of <strong>one</strong> compulsory item based on a real‑world agricultural scenario.<br>
+            • The model answers are provided after the question for self‑assessment.
+        </div>
+
+        <div class="question-section">
+            <div class="question-text">
+                <strong>ITEM 1</strong><br><br>
+                Kapeeka Farmers Association have submitted their concern to Nakaseke District agricultural officer about a certain disease that has attacked their cassava plantations and it has the following characteristics: rolled leaves, rotten tubers, stunted growth. The farmers have been invited to be trained at the District farm Institute.<br><br>
+                <span class="task">TASK</span><br>
+                a) Identify the plant structures and processes affected by these conditions.<br>
+                b) Explain the effects of the processes to the plants.<br>
+                c) Explain how the plant manages to overcome these challenges.
+            </div>
+        </div>
+
+        <!-- Model Answer Section (exact answer provided) -->
+        <div class="answer-section">
+            <div class="answer-title">Model Answers (Marking Guide)</div>
+
+            <div class="answer-block">
+                <h4>a) Plant structures and processes affected</h4>
+                <p><strong>Structures:</strong></p>
+                <ul>
+                    <li>Leaves (leaf blade, stomata) – rolled leaves</li>
+                    <li>Tubers (storage roots) – rotten tubers</li>
+                    <li>Stems and growing points (apical meristems, internodes) – stunted growth</li>
+                </ul>
+                <p><strong>Processes:</strong></p>
+                <ul>
+                    <li>Photosynthesis</li>
+                    <li>Transpiration</li>
+                    <li>Absorption of water and mineral salts</li>
+                    <li>Translocation of manufactured food</li>
+                    <li>Storage of starch</li>
+                    <li>Cell division, elongation and differentiation (growth)</li>
+                </ul>
+            </div>
+
+            <div class="answer-block">
+                <h4>b) Effects of the processes to the plants</h4>
+                <ul>
+                    <li><strong>Photosynthesis:</strong> Rolled leaves reduce the leaf surface exposed to sunlight and may damage chloroplasts, lowering the rate of photosynthesis. This reduces glucose production, leading to energy deficiency and starvation of the plant.</li>
+                    <li><strong>Transpiration:</strong> Leaf rolling reduces stomatal exposure, limiting transpiration. This impairs the transpiration stream, reducing the uptake and transport of water and mineral salts, and can cause overheating.</li>
+                    <li><strong>Absorption:</strong> Rotten tubers destroy root hairs and cortical tissues, drastically reducing the surface area for water and mineral absorption. This causes water deficit, leading to wilting and leaf rolling.</li>
+                    <li><strong>Translocation:</strong> Rotting damages vascular tissues (xylem and phloem) inside the tubers, disrupting the movement of water and dissolved sugars. Sugars may accumulate in leaves (feedback inhibition), further slowing photosynthesis and stunting growth.</li>
+                    <li><strong>Storage:</strong> Decayed tubers lose their ability to store starch. The plant’s food reserves are depleted, reducing the energy available for repair, regrowth and yield formation.</li>
+                    <li><strong>Growth (cell division and elongation):</strong> With limited water, minerals and carbohydrates, cell division and elongation at the shoot and root tips are inhibited, resulting in overall stunted growth and poor canopy development.</li>
+                </ul>
+            </div>
+
+            <div class="answer-block">
+                <h4>c) How the plant manages to overcome these challenges</h4>
+                <ul>
+                    <li><strong>Leaf rolling (water conservation):</strong> By rolling its leaves, the plant traps moist air close to the stomata and reduces direct exposure to wind and sun. This lowers the transpiration rate, helping to conserve water when roots are damaged and absorption is low.</li>
+                    <li><strong>Compartmentalisation (walling-off):</strong> The plant may deposit suberin (corky material) and lignin around the rotten areas of the tubers. This seals off the infected tissue, preventing the spread of rot pathogens to healthy parts.</li>
+                    <li><strong>Chemical defences:</strong> Cells around the infection site produce antimicrobial substances such as phytoalexins, phenolics and pathogenesis-related proteins. These inhibit the growth of the pathogens causing the tuber rot, slowing the disease.</li>
+                    <li><strong>Activation of dormant buds:</strong> When the main shoot is stunted or damaged, dormant axillary buds on the lower stem can be stimulated to sprout. This produces new branches and leaves, restoring some capacity for photosynthesis and growth.</li>
+                    <li><strong>Adventitious root formation:</strong> In some cases, cassava stems can produce adventitious roots above the rotten tubers when in contact with moist soil. These new roots help regain water and mineral absorption, partially compensating for the lost root system.</li>
+                    <li><strong>Resource reallocation:</strong> The plant may redirect any remaining stored starch from less-affected tissues to support the growth of new shoots or initiate the formation of small replacement tubers, ensuring some survival and yield.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="logout-btn" id="logoutBtn">← Logout & Return</button>
+        </div>
+    </div>
+
+    <script>
+        // Simple login simulation
+        const loginSection = document.getElementById('loginSection');
+        const examSection = document.getElementById('examSection');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementById('errorMsg');
+
+        // Show login page initially, hide exam
+        examSection.style.display = 'none';
+        loginSection.style.display = 'block';
+
+        loginBtn.addEventListener('click', function() {
+            const user = usernameInput.value.trim();
+            const pass = passwordInput.value.trim();
+            
+            if (user === '' || pass === '') {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = 'Both fields are required.';
+            } else {
+                // Any non-empty credentials accepted (demo)
+                errorMsg.style.display = 'none';
+                loginSection.style.display = 'none';
+                examSection.style.display = 'block';
+                // Clear fields for next time
+                usernameInput.value = '';
+                passwordInput.value = '';
+            }
+        });
+
+        logoutBtn.addEventListener('click', function() {
+            examSection.style.display = 'none';
+            loginSection.style.display = 'block';
+        });
+
+        // Allow Enter key to trigger login
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+        usernameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                passwordInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
